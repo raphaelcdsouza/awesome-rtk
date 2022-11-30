@@ -2,7 +2,8 @@
   "name": "rtk",
   "description": "Raphael's Tool kit",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/raphaelcdsouza/rtk.git"
@@ -12,6 +13,13 @@
   },
   "homepage": "https://github.com/raphaelcdsouza/rtk/issues#readme",
   "author": "Raphael Cássio de Souza <rapha.cassio@gmail.com>",
+  "keywords": [
+    "rtk",
+    "raphael",
+    "toolkit",
+    "typescript",
+    "javascript"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.2.3",
@@ -30,9 +38,15 @@
   },
   "scripts": {
     "build": "rm -rf ./lib && tsc -p tsconfig-build.json",
+    "lint": "eslint .",
     "test": "jest --passWithNoTests --no-cache --runInBand",
     "test:watch": "yarn test -- --watch",
-    "test:coverage": "yarn test -- --coverage"
+    "test:coverage": "yarn test -- --coverage",
+    "prepare": "npm run build",
+    "preplubishOnly": "npm run test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "mysql2": "^2.3.3",
