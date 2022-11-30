@@ -37,5 +37,6 @@
   "dependencies": {
     "mysql2": "^2.3.3",
     "pg": "^8.8.0"
-  }
+  },
+  "files": ["lib/**/*"]
 }
