@@ -1,0 +1,41 @@
+{
+  "name": "rtk",
+  "description": "Raphael's Tool kit",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raphaelcdsouza/rtk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raphaelcdsouza/rtk/issues"
+  },
+  "homepage": "https://github.com/raphaelcdsouza/rtk/issues#readme",
+  "author": "Raphael Cássio de Souza <rapha.cassio@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.2.3",
+    "@types/node": "^18.7.18",
+    "@types/pg": "^8.6.5",
+    "@typescript-eslint/eslint-plugin": "^5.37.0",
+    "@typescript-eslint/parser": "^5.37.0",
+    "eslint": "^8.23.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "^29.3.1",
+    "nodemon": "^2.0.20",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.3"
+  },
+  "scripts": {
+    "build": "rm -rf ./lib && tsc -p tsconfig-build.json",
+    "test": "jest --passWithNoTests --no-cache --runInBand",
+    "test:watch": "yarn test -- --watch",
+    "test:coverage": "yarn test -- --coverage"
+  },
+  "dependencies": {
+    "mysql2": "^2.3.3",
+    "pg": "^8.8.0"
+  }
+}

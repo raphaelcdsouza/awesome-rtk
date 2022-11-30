@@ -1,0 +1,16 @@
+export const POSTGRES_ERROR_CODES = {
+  TABLE_NOT_FOUND: '42P01',
+  COLUMN_NOT_FOUND: '42703',
+};
+
+export const MYSQL_ERROR_CODES = {
+  COLUMN_NOT_FOUND: 1054,
+};
+
+export const ERRORS = {
+  DATABASE: {
+    UNKNOWN: 'E02000',
+    TABLE_NOT_FOUND: 'E02001',
+    COLUMN_NOT_FOUND: 'E02002',
+  },
+};
