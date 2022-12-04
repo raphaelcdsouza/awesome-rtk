@@ -16,7 +16,7 @@ describe('InfraError', () => {
     sut = new InfraErrorStub(errorMessage, errorCode);
   });
 
-  it('should extends "Error" class', () => {
+  it('should extends "BaseError" class', () => {
     expect(sut).toBeInstanceOf(BaseError);
   });
 });

@@ -14,7 +14,7 @@ describe('BaseError', () => {
     sut = new DatabaseError(errorMessage, errorCode, databaseEngine, databaseErrorCode);
   });
 
-  it('should extends "Error" class', () => {
+  it('should extends "InfraError" class', () => {
     expect(sut).toBeInstanceOf(InfraError);
   });
 
