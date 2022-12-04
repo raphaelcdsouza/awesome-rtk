@@ -1,5 +1,5 @@
 import { DatabaseError, InfraError } from '../../src/Errors';
-import { ERRORS } from '../../src/Utils/DB/Enums';
+import { ERRORS } from '../../src/Utils/Enums';
 
 describe('BaseError', () => {
   const errorMessage = 'any_error_message';
@@ -14,7 +14,7 @@ describe('BaseError', () => {
     sut = new DatabaseError(errorMessage, errorCode, databaseEngine, databaseErrorCode);
   });
 
-  it('should extends "Error" class', () => {
+  it('should extends "InfraError" class', () => {
     expect(sut).toBeInstanceOf(InfraError);
   });
 

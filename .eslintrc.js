@@ -27,6 +27,8 @@ module.exports = {
     'no-useless-constructor': 'off',
     'import/prefer-default-export': 'off',
     'consistent-return': 'off',
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-unused-vars': ['error', {
       argsIgnorePattern: '^_',

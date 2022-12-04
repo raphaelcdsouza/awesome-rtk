@@ -1,5 +1,5 @@
 import { postgresErrorMapper, mysqlErrorMapper } from '../../../../src/Utils/DB/Error';
-import { ERRORS, POSTGRES_ERROR_CODES, MYSQL_ERROR_CODES } from '../../../../src/Utils/DB/Enums';
+import { ERRORS, POSTGRES_ERROR_CODES, MYSQL_ERROR_CODES } from '../../../../src/Utils/Enums';
 
 describe('mapper', () => {
   describe('postgresErrorMapper', () => {

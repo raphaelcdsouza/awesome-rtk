@@ -46,11 +46,17 @@
     "preplubishOnly": "npm run test && npm run lint",
     "preversion": "npm run lint",
     "version": "git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "pub:patch": "npm version patch && npm publish",
+    "pub:minor": "npm version minor && npm publish",
+    "pub:major": "npm version major && npm publish"
   },
   "dependencies": {
+    "axios": "^1.2.0",
     "mysql2": "^2.3.3",
     "pg": "^8.8.0"
   },
-  "files": ["lib/**/*"]
+  "files": [
+    "lib/**/*"
+  ]
 }
