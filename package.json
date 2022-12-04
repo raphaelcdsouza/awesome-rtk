@@ -49,8 +49,11 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
+    "axios": "^1.2.0",
     "mysql2": "^2.3.3",
     "pg": "^8.8.0"
   },
-  "files": ["lib/**/*"]
+  "files": [
+    "lib/**/*"
+  ]
 }
