@@ -1,5 +1,5 @@
 import { DatabaseError, InfraError } from '../../src/Errors';
-import { ERRORS } from '../../src/Utils/DB/Enums';
+import { ERRORS } from '../../src/Utils/Enums';
 
 describe('BaseError', () => {
   const errorMessage = 'any_error_message';

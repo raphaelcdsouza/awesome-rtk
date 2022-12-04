@@ -1,4 +1,4 @@
-import { ERRORS } from '../Utils/DB/Enums';
+import { ERRORS } from '../Utils/Enums';
 import { InfraError } from './InfraError';
 
 export class DatabaseError extends InfraError {

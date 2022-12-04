@@ -1,4 +1,4 @@
-import { POSTGRES_ERROR_CODES, MYSQL_ERROR_CODES, ERRORS } from '../Enums';
+import { POSTGRES_ERROR_CODES, MYSQL_ERROR_CODES, ERRORS } from '../../Enums';
 
 export const postgresErrorMapper = (code: string): string => {
   switch (code) {
