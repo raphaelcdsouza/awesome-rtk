@@ -15,12 +15,16 @@ export const HTTP_ERROR_CODES = {
   SERVER_ERROR: 500,
 };
 
-export const ERRORS = {
-  DATABASE: {
-    UNKNOWN: 'E02000',
-    TABLE_NOT_FOUND: 'E02001',
-    COLUMN_NOT_FOUND: 'E02002',
+export const AWS_ERROR_CODES = {
+  S3: {
+    NOT_FOUND: 'NoSuchKey',
+    UNEXISTENT_BUCKET: 'NoSuchBucket',
+    INVALID_ACCESS_KEY: 'InvalidAccessKeyId',
+    INVALID_SECRET_KEY: 'SignatureDoesNotMatch',
   },
+};
+
+export const ERRORS = {
   HTTP: {
     UNKNOWN: 'E01000',
     NOT_FOUND: 'E01001',
@@ -28,5 +32,19 @@ export const ERRORS = {
     FORBIDDEN: 'E01003',
     BAD_REQUEST: 'E01004',
     SERVER_ERROR: 'E01005',
+  },
+  DATABASE: {
+    UNKNOWN: 'E02000',
+    TABLE_NOT_FOUND: 'E02001',
+    COLUMN_NOT_FOUND: 'E02002',
+  },
+  AWS: {
+    UNKNOWN: 'E03000',
+    S3: {
+      NOT_FOUND: 'E03001',
+      UNEXISTENT_BUCKET: 'E03002',
+      INVALID_ACCESS_KEY: 'E03003',
+      INVALID_SECRET_KEY: 'E03004',
+    },
   },
 };
