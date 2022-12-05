@@ -3,7 +3,7 @@ import { HttpError } from '../../Errors';
 
 import { IHttpClient } from '../Interfaces/Gateways';
 
-export class AxiosHttpClient {
+export class AxiosHttpClient implements IHttpClient {
   async request<T = any>(params: IHttpClient.Input): Promise<T> {
     try {
       const { data } = await axios<any, AxiosResponse<T>>(params);
