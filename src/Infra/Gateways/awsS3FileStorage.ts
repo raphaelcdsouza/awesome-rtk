@@ -1,4 +1,4 @@
-import { config, S3 } from 'aws-sdk';
+import { S3 } from 'aws-sdk';
 import { Readable } from 'stream';
 import { FileStorageError } from '../../Errors';
 import { awsErrorMapper } from '../../Utils/Gateways/Error';
@@ -9,20 +9,19 @@ export class AwsS3FileStorage implements IRetrieveFile, IUploadFile {
   private readonly s3Instance: S3;
 
   constructor(accessKey: string, secret: string) {
-    config.update({
+    this.s3Instance = new S3({
       credentials: {
         accessKeyId: accessKey,
         secretAccessKey: secret,
       },
     });
-    this.s3Instance = new S3();
   }
 
   async retrieveFileFromStream({ key, bucketName }: IRetrieveFile.Input): Promise<Readable> {
     try {
       return this.retrieveFromAws(key, bucketName).createReadStream();
     } catch (err: any) {
-      throw new FileStorageError(err.message, awsErrorMapper(err.code), 'aws', err.code);
+      throw this.throwError(err);
     }
   }
 
@@ -30,7 +29,7 @@ export class AwsS3FileStorage implements IRetrieveFile, IUploadFile {
     try {
       return (await this.retrieveFromAws(key, bucketName).promise()).Body as Buffer;
     } catch (err: any) {
-      throw new FileStorageError(err.message, awsErrorMapper(err.code), 'aws', err.code);
+      throw this.throwError(err);
     }
   }
 
@@ -44,7 +43,7 @@ export class AwsS3FileStorage implements IRetrieveFile, IUploadFile {
 
       return Location;
     } catch (err: any) {
-      throw new FileStorageError(err.message, awsErrorMapper(err.code), 'aws', err.code);
+      throw this.throwError(err);
     }
   }
 
@@ -53,5 +52,9 @@ export class AwsS3FileStorage implements IRetrieveFile, IUploadFile {
       Bucket: bucketName,
       Key: key,
     });
+  }
+
+  private throwError(err: any) {
+    return new FileStorageError(err.message, awsErrorMapper(err.code, 's3'), 'aws', err.code);
   }
 }
