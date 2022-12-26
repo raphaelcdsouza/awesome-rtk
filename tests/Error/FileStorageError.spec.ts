@@ -23,8 +23,8 @@ describe('BaseError', () => {
     expect(sut).toHaveProperty('providerErrorCode', providerErrorCode);
   });
 
-  it('should have "message" property as "Unknown error" if "code" argument is passed with value "E02000"', () => {
-    const unknownError = new FileStorageError(errorMessage, ERRORS.AWS.UNKNOWN, provider, providerErrorCode);
+  it('should have "message" property as "Unknown error" if "code" argument is passed with value "E03000"', () => {
+    const unknownError = new FileStorageError(errorMessage, ERRORS.FILE_STORAGE.UNKNOWN, provider, providerErrorCode);
 
     expect(unknownError).toHaveProperty('message', unknownErrorMessage);
   });

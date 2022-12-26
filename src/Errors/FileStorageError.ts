@@ -7,7 +7,7 @@ export class FileStorageError extends InfraError {
   public readonly providerErrorCode: string;
 
   constructor(message: string, code: string, provider: 'aws', providerErrorCode: string) {
-    super(code === ERRORS.AWS.UNKNOWN ? 'Unknown error' : message, code);
+    super(code === ERRORS.FILE_STORAGE.UNKNOWN ? 'Unknown error' : message, code);
     this.provider = provider;
     this.providerErrorCode = providerErrorCode;
   }
