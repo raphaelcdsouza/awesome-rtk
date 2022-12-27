@@ -89,6 +89,12 @@ describe('AwsServiceTemplate', () => {
     expect(performActionSpy).toHaveBeenCalledWith(cognitoInterfaceMock, paramsObject, username, undefined);
   });
 
+  it('should not call "awsCognitoSecretHash" if "clientSecret" is undefined', async () => {
+    await sut.execute(paramsObject, username);
+
+    expect(awsCognitoSecretHash).toHaveBeenCalledTimes(0);
+  });
+
   describe('with secret hash', () => {
     beforeEach(() => {
       sut = new AwsCognitoStub(clientIdMock, clientSecretMock);
@@ -100,6 +106,12 @@ describe('AwsServiceTemplate', () => {
       await sut.execute(paramsObject, username);
 
       expect(performActionSpy).toHaveBeenCalledWith(cognitoInterfaceMock, paramsObject, username, 'any_client_secret-hashed');
+    });
+
+    it('should not call "awsCognitoSecretHash" if "username" is undefined', async () => {
+      await sut.execute(paramsObject);
+
+      expect(awsCognitoSecretHash).toHaveBeenCalledTimes(0);
     });
 
     it('should call "awsCognitoSecretHash" with correct params', async () => {
