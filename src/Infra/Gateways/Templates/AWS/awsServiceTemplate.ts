@@ -1,19 +1,19 @@
 import { InfraError } from '../../../../Errors';
 
-export abstract class AwsServiceTemplate {
-  protected readonly serviceInstance: any;
+export abstract class AwsServiceTemplate<T = unknown> {
+  protected readonly serviceInstance: T;
 
-  constructor(serviceInstance: any) {
+  constructor(serviceInstance: T) {
     this.serviceInstance = serviceInstance;
   }
 
-  protected abstract performAction(serviceInstance: any, params: any): Promise<any>;
+  protected abstract performAction(params: any): Promise<any>;
 
   protected abstract throwError(err: any): InfraError;
 
   async execute<Q = any, K = any>(params: Q): Promise<K> {
     try {
-      return await this.performAction(this.serviceInstance, params);
+      return await this.performAction(params);
     } catch (err: any) {
       throw this.throwError(err);
     }

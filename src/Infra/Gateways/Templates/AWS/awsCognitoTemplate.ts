@@ -1,27 +1,26 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { IdentityProviderError, InfraError } from '../../../../Errors';
 import { awsCognitoSecretHash } from '../../../../Utils';
 import { awsErrorMapper } from '../../../../Utils/Gateways/Error/mapper';
 import { AwsServiceTemplate } from './awsServiceTemplate';
 
-type AwsCognitoIdentityProviderConstructorParams = {
-  cognitoInstance: CognitoIdentityServiceProvider;
+type AwsCognitoIdentityProviderConstructorParams<T = any> = {
+  cognitoInstance: T;
   clientId: string;
   clientSecret?: string;
 }
 
-export abstract class AwsCognitoTemplate extends AwsServiceTemplate {
-  private clientId: string;
+export abstract class AwsCognitoTemplate<T = unknown> extends AwsServiceTemplate<T> {
+  protected clientId: string;
 
-  private clientSecret?: string;
+  protected clientSecret?: string;
 
-  constructor({ cognitoInstance, clientId, clientSecret }: AwsCognitoIdentityProviderConstructorParams) {
+  constructor({ cognitoInstance, clientId, clientSecret }: AwsCognitoIdentityProviderConstructorParams<T>) {
     super(cognitoInstance);
     this.clientId = clientId;
     this.clientSecret = clientSecret;
   }
 
-  protected abstract performAction(serviceInstance: CognitoIdentityServiceProvider, params: any, username?: string, secretHash?: string): Promise<any>;
+  protected abstract performAction(params: any, username?: string, secretHash?: string): Promise<any>;
 
   override async execute<Q = any, K = any>(params: Q, username?: string): Promise<K> {
     try {
@@ -31,7 +30,7 @@ export abstract class AwsCognitoTemplate extends AwsServiceTemplate {
         secretHash = this.createSecretHash(username, this.clientSecret);
       }
 
-      return await this.performAction(this.serviceInstance, params, username, secretHash);
+      return await this.performAction(params, username, secretHash);
     } catch (err: any) {
       throw this.throwError(err);
     }

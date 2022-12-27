@@ -23,7 +23,7 @@ class AwsServiceStub extends AwsServiceTemplate {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async performAction(serviceInstance: typeof awsServiceInstanceMock, params: any): Promise<any> {
+  async performAction(params: any): Promise<any> {
     return this.result;
   }
 
@@ -56,7 +56,7 @@ describe('AwsServiceTemplate', () => {
 
     await sut.execute(paramsObject);
 
-    expect(performActionSpy).toHaveBeenCalledWith(awsServiceInstanceMock, paramsObject);
+    expect(performActionSpy).toHaveBeenCalledWith(paramsObject);
   });
 
   it('should return same result as "performAction" method', async () => {

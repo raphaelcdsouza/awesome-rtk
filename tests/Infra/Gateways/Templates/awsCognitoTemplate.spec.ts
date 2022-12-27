@@ -23,7 +23,7 @@ const cognitoInterfaceMock: jest.Mocked<CognitoIdentityServiceProvider> = new Co
 const clientIdMock = 'any_client_id';
 const clientSecretMock = 'any_client_secret';
 
-class AwsCognitoStub extends AwsCognitoTemplate {
+class AwsCognitoStub extends AwsCognitoTemplate<CognitoIdentityServiceProvider> {
   result = 'any_resultany_param';
 
   constructor(clientId: string, clientSecret?: string) {
@@ -31,7 +31,7 @@ class AwsCognitoStub extends AwsCognitoTemplate {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async performAction(serviceInstance: CognitoIdentityServiceProvider, params: any, username?: string, secretHash?: string): Promise<any> {
+  async performAction(params: any, username?: string, secretHash?: string): Promise<any> {
     return this.result;
   }
 }
@@ -72,7 +72,7 @@ describe('AwsServiceTemplate', () => {
 
     await sut.execute(paramsObject);
 
-    expect(performActionSpy).toHaveBeenCalledWith(cognitoInterfaceMock, paramsObject, undefined, undefined);
+    expect(performActionSpy).toHaveBeenCalledWith(paramsObject, undefined, undefined);
   });
 
   it('should return same result as "performAction" method', async () => {
@@ -86,7 +86,7 @@ describe('AwsServiceTemplate', () => {
 
     await sut.execute(paramsObject, username);
 
-    expect(performActionSpy).toHaveBeenCalledWith(cognitoInterfaceMock, paramsObject, username, undefined);
+    expect(performActionSpy).toHaveBeenCalledWith(paramsObject, username, undefined);
   });
 
   it('should not call "awsCognitoSecretHash" if "clientSecret" is undefined', async () => {
@@ -105,7 +105,7 @@ describe('AwsServiceTemplate', () => {
 
       await sut.execute(paramsObject, username);
 
-      expect(performActionSpy).toHaveBeenCalledWith(cognitoInterfaceMock, paramsObject, username, 'any_client_secret-hashed');
+      expect(performActionSpy).toHaveBeenCalledWith(paramsObject, username, 'any_client_secret-hashed');
     });
 
     it('should not call "awsCognitoSecretHash" if "username" is undefined', async () => {
