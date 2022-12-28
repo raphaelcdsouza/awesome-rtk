@@ -6,6 +6,7 @@ import { Login } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvi
 import { ILogin } from '../../../../../src/Infra/Interfaces/Gateways';
 
 jest.mock('aws-sdk');
+
 jest.mock('../../../../../src/Utils/hash', () => ({
   awsCognitoSecretHash: jest.fn().mockReturnValue('any_secret_hash'),
 }));
@@ -28,6 +29,9 @@ describe('awsCognitoIdentityProvider', () => {
   const accessToken = 'any_access_token';
   const refreshToken = 'any_refresh_token';
   const idToken = 'any_id_token';
+  const challengeName = 'any_challenge_name';
+  const session = 'any_session';
+  const sub = 'any_sub';
 
   beforeAll(() => {
     initiateAuthPromiseSpy = jest.fn().mockResolvedValue({
@@ -73,14 +77,34 @@ describe('awsCognitoIdentityProvider', () => {
     expect(initiateAuthPromiseSpy).toHaveBeenCalledTimes(1);
   });
 
-  // it('should return destination and delivery medium', async () => {
-  //   const result = await sut.resendSignUpConfirmationCode({ username });
+  it('should return correct data in case of login without MFA', async () => {
+    const result = await sut.execute<ExecuteInput, ExecuteOutput>({ password }, username);
 
-  //   expect(result).toEqual({
-  //     destination,
-  //     deliveryMedium,
-  //   });
-  // });
+    expect(result).toEqual({
+      tokenType,
+      accessToken,
+      refreshToken,
+      idToken,
+    });
+  });
+
+  it('should return correct data in case of login with MFA', async () => {
+    initiateAuthPromiseSpy.mockResolvedValueOnce({
+      ChallengeName: challengeName,
+      Session: session,
+      ChallengeParameters: {
+        USER_ID_FOR_SRP: sub,
+      },
+    });
+
+    const result = await sut.execute<ExecuteInput, ExecuteOutput>({ password }, username);
+
+    expect(result).toEqual({
+      challengeName,
+      session,
+      sub,
+    });
+  });
 
   it('should throw a "IdentityProviderErrror" if "initiateAuth" throws', async () => {
     const errorMessage = 'any_error_message';

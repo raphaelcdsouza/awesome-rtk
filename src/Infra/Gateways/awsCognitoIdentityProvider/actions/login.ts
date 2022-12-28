@@ -19,7 +19,7 @@ export class Login extends AwsCognitoTemplate<CognitoIdentityServiceProvider> {
   }
 
   protected async performAction(params: ExecuteInput, username: string, secretHash?: string): Promise<ExecuteOutput> {
-    await this.serviceInstance.initiateAuth({
+    const result = await this.serviceInstance.initiateAuth({
       ClientId: this.clientId,
       AuthFlow: 'USER_PASSWORD_AUTH',
       AuthParameters: {
@@ -28,6 +28,20 @@ export class Login extends AwsCognitoTemplate<CognitoIdentityServiceProvider> {
         SECRET_HASH: secretHash!,
       },
     }).promise();
-    return {} as any;
+
+    if (result.AuthenticationResult !== undefined) {
+      return {
+        tokenType: result.AuthenticationResult!.TokenType!,
+        accessToken: result.AuthenticationResult!.AccessToken!,
+        refreshToken: result.AuthenticationResult!.RefreshToken!,
+        idToken: result.AuthenticationResult!.IdToken!,
+      };
+    }
+
+    return {
+      challengeName: result.ChallengeName!,
+      session: result.Session!,
+      sub: result.ChallengeParameters!.USER_ID_FOR_SRP!,
+    };
   }
 }
