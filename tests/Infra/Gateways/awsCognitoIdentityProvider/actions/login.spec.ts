@@ -1,6 +1,5 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { IdentityProviderError } from '../../../../../src/Errors';
 
 import { Login } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvider/actions';
 import { ILogin } from '../../../../../src/Infra/Interfaces/Gateways';
@@ -104,20 +103,6 @@ describe('awsCognitoIdentityProvider', () => {
       session,
       sub,
     });
-  });
-
-  it('should throw a "IdentityProviderErrror" if "initiateAuth" throws', async () => {
-    const errorMessage = 'any_error_message';
-    const errorCode = 'any_error_code';
-    const errorObject = {
-      message: errorMessage,
-      code: errorCode,
-    };
-    cognitoInterfaceMock.initiateAuth.mockImplementationOnce(() => { throw errorObject; });
-
-    const promise = sut.execute<ExecuteInput>({ password }, username);
-
-    await expect(promise).rejects.toBeInstanceOf(IdentityProviderError);
   });
 
   describe('with secret hash', () => {
