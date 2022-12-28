@@ -24,17 +24,21 @@ export class Login extends AwsCognitoTemplate {
 
     if (result.AuthenticationResult !== undefined) {
       return {
-        tokenType: result.AuthenticationResult!.TokenType!,
-        accessToken: result.AuthenticationResult!.AccessToken!,
-        refreshToken: result.AuthenticationResult!.RefreshToken!,
-        idToken: result.AuthenticationResult!.IdToken!,
+        authenticationData: {
+          tokenType: result.AuthenticationResult!.TokenType!,
+          accessToken: result.AuthenticationResult!.AccessToken!,
+          refreshToken: result.AuthenticationResult!.RefreshToken!,
+          idToken: result.AuthenticationResult!.IdToken!,
+        },
       };
     }
 
     return {
-      challengeName: result.ChallengeName!,
-      session: result.Session!,
-      sub: result.ChallengeParameters!.USER_ID_FOR_SRP!,
+      challengeData: {
+        challengeName: result.ChallengeName!,
+        session: result.Session!,
+        sub: result.ChallengeParameters!.USER_ID_FOR_SRP!,
+      },
     };
   }
 }

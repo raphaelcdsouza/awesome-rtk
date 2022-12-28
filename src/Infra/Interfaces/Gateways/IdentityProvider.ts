@@ -56,12 +56,16 @@ export namespace ILogin {
   }
 
   export type Output = {
-    tokenType?: string
-    accessToken?: string
-    refreshToken?: string
-    idToken?: string
-    challengeName?: string
-    sub?: string
-    session?: string
+    authenticationData?: {
+      tokenType?: string
+      accessToken?: string
+      refreshToken?: string
+      idToken?: string
+    },
+    challengeData?: {
+      challengeName?: string
+      sub?: string
+      session?: string
+    }
   }
 }

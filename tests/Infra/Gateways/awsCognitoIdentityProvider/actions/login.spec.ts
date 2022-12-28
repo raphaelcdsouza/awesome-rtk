@@ -80,10 +80,12 @@ describe('awsCognitoIdentityProvider', () => {
     const result = await sut.execute<ExecuteInput, ExecuteOutput>({ password }, username);
 
     expect(result).toEqual({
-      tokenType,
-      accessToken,
-      refreshToken,
-      idToken,
+      authenticationData: {
+        tokenType,
+        accessToken,
+        refreshToken,
+        idToken,
+      },
     });
   });
 
@@ -99,9 +101,11 @@ describe('awsCognitoIdentityProvider', () => {
     const result = await sut.execute<ExecuteInput, ExecuteOutput>({ password }, username);
 
     expect(result).toEqual({
-      challengeName,
-      session,
-      sub,
+      challengeData: {
+        challengeName,
+        session,
+        sub,
+      },
     });
   });
 
