@@ -23,7 +23,7 @@ const cognitoInterfaceMock: jest.Mocked<CognitoIdentityServiceProvider> = new Co
 const clientIdMock = 'any_client_id';
 const clientSecretMock = 'any_client_secret';
 
-class AwsCognitoStub extends AwsCognitoTemplate<CognitoIdentityServiceProvider> {
+class AwsCognitoStub extends AwsCognitoTemplate {
   result = 'any_resultany_param';
 
   constructor(clientId: string, clientSecret?: string) {

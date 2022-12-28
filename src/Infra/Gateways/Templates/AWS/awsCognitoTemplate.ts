@@ -1,3 +1,5 @@
+import { CognitoIdentityServiceProvider } from 'aws-sdk';
+
 import { IdentityProviderError, InfraError } from '../../../../Errors';
 import { awsCognitoSecretHash } from '../../../../Utils';
 import { awsErrorMapper } from '../../../../Utils/Gateways/Error/mapper';
@@ -9,12 +11,12 @@ type AwsCognitoIdentityProviderConstructorParams<T = any> = {
   clientSecret?: string;
 }
 
-export abstract class AwsCognitoTemplate<T = unknown> extends AwsServiceTemplate<T> {
+export abstract class AwsCognitoTemplate extends AwsServiceTemplate<CognitoIdentityServiceProvider> {
   protected clientId: string;
 
   protected clientSecret?: string;
 
-  constructor({ cognitoInstance, clientId, clientSecret }: AwsCognitoIdentityProviderConstructorParams<T>) {
+  constructor({ cognitoInstance, clientId, clientSecret }: AwsCognitoIdentityProviderConstructorParams<CognitoIdentityServiceProvider>) {
     super(cognitoInstance);
     this.clientId = clientId;
     this.clientSecret = clientSecret;

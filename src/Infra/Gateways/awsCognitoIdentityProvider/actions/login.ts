@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
-
 import { AwsCognitoTemplate } from '../../Templates/AWS';
 import { ILogin } from '../../../Interfaces/Gateways';
 import { AwsCognitoTemplateConstructorParams } from './Types';
@@ -8,7 +6,7 @@ import { AwsCognitoTemplateConstructorParams } from './Types';
 type ExecuteInput = Omit<ILogin.Input, 'username'>;
 type ExecuteOutput = ILogin.Output;
 
-export class Login extends AwsCognitoTemplate<CognitoIdentityServiceProvider> {
+export class Login extends AwsCognitoTemplate {
   constructor({ clientId, cognitoInstance, clientSecret }: AwsCognitoTemplateConstructorParams) {
     super({ clientId, cognitoInstance, clientSecret });
   }

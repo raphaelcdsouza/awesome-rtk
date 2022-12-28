@@ -1,4 +1,3 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { SignUpRequest } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 import { AwsCognitoTemplate } from '../../Templates/AWS';
@@ -8,7 +7,7 @@ import { AwsCognitoTemplateConstructorParams } from './Types';
 type ExecuteInput = Omit<ISignUp.Input, 'username'>;
 type ExecuteOutput = ISignUp.Output;
 
-export class SignUp extends AwsCognitoTemplate<CognitoIdentityServiceProvider> {
+export class SignUp extends AwsCognitoTemplate {
   constructor({ clientId, cognitoInstance, clientSecret }: AwsCognitoTemplateConstructorParams) {
     super({ clientId, cognitoInstance, clientSecret });
   }
