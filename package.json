@@ -55,6 +55,7 @@
   "dependencies": {
     "aws-sdk": "^2.1267.0",
     "axios": "^1.2.0",
+    "jest-mock-extended": "^3.0.1",
     "mysql2": "^2.3.3",
     "pg": "^8.8.0"
   },
