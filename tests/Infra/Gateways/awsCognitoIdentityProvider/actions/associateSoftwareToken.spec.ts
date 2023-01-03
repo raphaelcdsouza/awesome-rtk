@@ -2,6 +2,7 @@ import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { AssociateSoftwareToken } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvider/actions';
+import { AwsCognitoTemplate } from '../../../../../src/Infra/Gateways/Templates/AWS';
 import { IAssociateSoftwareToken } from '../../../../../src/Infra/Interfaces/Gateways';
 
 jest.mock('aws-sdk');
@@ -41,6 +42,10 @@ describe('awsCognitoIdentityProvider', () => {
     Session: inputSession,
     AccessToken: undefined,
   };
+
+  it('should be instance of AwsCognitoTemplate', () => {
+    expect(sut).toBeInstanceOf(AwsCognitoTemplate);
+  });
 
   describe('using session property after first login', () => {
     it('should call "associateSoftwareToken" with correct params', async () => {

@@ -2,6 +2,7 @@ import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { ConfirmSignUp } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvider/actions';
+import { AwsCognitoTemplate } from '../../../../../src/Infra/Gateways/Templates/AWS';
 import { IConfirmSignUp } from '../../../../../src/Infra/Interfaces/Gateways';
 
 jest.mock('aws-sdk');
@@ -41,6 +42,10 @@ describe('awsCognitoIdentityProvider', () => {
     Username: username,
     ConfirmationCode: confirmationCode,
   };
+
+  it('should be instance of AwsCognitoTemplate', () => {
+    expect(sut).toBeInstanceOf(AwsCognitoTemplate);
+  });
 
   it('should call "confirmSignUp" with correct params', async () => {
     await sut.execute<ExecuteInput>({ code: confirmationCode }, username);

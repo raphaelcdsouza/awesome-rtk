@@ -2,6 +2,7 @@ import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { Login } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvider/actions';
+import { AwsCognitoTemplate } from '../../../../../src/Infra/Gateways/Templates/AWS';
 import { ILogin } from '../../../../../src/Infra/Interfaces/Gateways';
 
 jest.mock('aws-sdk');
@@ -61,6 +62,10 @@ describe('awsCognitoIdentityProvider', () => {
       SECRET_HASH: undefined as unknown as string,
     },
   };
+
+  it('should be instance of AwsCognitoTemplate', () => {
+    expect(sut).toBeInstanceOf(AwsCognitoTemplate);
+  });
 
   it('should call "initiateAuth" with correct params', async () => {
     await sut.execute<ExecuteInput>({ password }, username);
