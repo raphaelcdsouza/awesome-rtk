@@ -83,7 +83,7 @@ describe('awsCognitoIdentityProvider', () => {
         SecretCode: publicKey,
       });
 
-      const result = await sut.execute<ExecuteInput, ExecuteOutput>({ session: inputSession });
+      const result = await sut.execute<ExecuteInput, ExecuteOutput>({ accessToken });
 
       expect(result).toEqual({
         publicKey,

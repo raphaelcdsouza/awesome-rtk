@@ -85,3 +85,20 @@ export namespace IAssociateSoftwareToken {
     session?: string
   }
 }
+
+export interface IVerifySoftwareToken {
+  verifySoftwareToken: (params: IVerifySoftwareToken.Input) => Promise<IVerifySoftwareToken.Output>
+}
+
+export namespace IVerifySoftwareToken {
+  export type Input = {
+    session?: string
+    accessToken?: string
+    mfaCode: string
+  }
+
+  export type Output = {
+    status: string
+    session?: string
+  }
+}
