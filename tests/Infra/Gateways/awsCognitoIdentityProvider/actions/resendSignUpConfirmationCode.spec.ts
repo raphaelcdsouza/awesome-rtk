@@ -14,7 +14,7 @@ jest.mock('../../../../../src/Utils/hash', () => ({
 type ExecuteInput = undefined;
 type ExecuteOutput = IResendSignUpConfirmationCode.Output;
 
-describe('awsCognitoIdentityProvider', () => {
+describe('resendSignUpConfirmationCode', () => {
   let resendConfirmationCodePromiseSpy: jest.Mock;
   let cognitoInterfaceMock: MockProxy<CognitoIdentityServiceProvider>;
   let sut: ResendSignUpConfirmationCode;

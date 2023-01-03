@@ -10,7 +10,7 @@ jest.mock('aws-sdk');
 type ExecuteInput = IVerifySoftwareToken.Input;
 type ExecuteOutput = IVerifySoftwareToken.Output;
 
-describe('awsCognitoIdentityProvider', () => {
+describe('verifySoftwareToken', () => {
   let verifySoftwareTokenPromiseSpy: jest.Mock;
   let cognitoInterfaceMock: MockProxy<CognitoIdentityServiceProvider>;
   let sut: VerifySoftwareToken;

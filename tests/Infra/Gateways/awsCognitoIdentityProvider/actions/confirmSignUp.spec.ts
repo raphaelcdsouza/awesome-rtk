@@ -13,7 +13,7 @@ jest.mock('../../../../../src/Utils/hash', () => ({
 
 type ExecuteInput = Omit<IConfirmSignUp.Input, 'username'>;
 
-describe('awsCognitoIdentityProvider', () => {
+describe('confirmSignup', () => {
   let confirmSignUpPromiseSpy: jest.Mock;
   let cognitoInterfaceMock: MockProxy<CognitoIdentityServiceProvider>;
   let sut: ConfirmSignUp;
