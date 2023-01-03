@@ -102,3 +102,27 @@ export namespace IVerifySoftwareToken {
     session?: string
   }
 }
+
+export interface IRespondToAuthChallenge {
+  respondToAuthChallenge: (params: IRespondToAuthChallenge.Input) => Promise<IRespondToAuthChallenge.Output>
+}
+
+export namespace IRespondToAuthChallenge {
+  export type Input = {
+    name: string
+    username: string
+    session: string
+    responses: {
+      mfaCode: string
+    }
+  }
+
+  export type Output = {
+    authenticationData: {
+      tokenType?: string
+      accessToken?: string
+      refreshToken?: string
+      idToken?: string
+    }
+  }
+}
