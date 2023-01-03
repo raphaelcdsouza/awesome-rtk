@@ -69,3 +69,19 @@ export namespace ILogin {
     }
   }
 }
+
+export interface IAssociateSoftwareToken {
+  associateSoftwareToken: (params: IAssociateSoftwareToken.Input) => Promise<IAssociateSoftwareToken.Output>
+}
+
+export namespace IAssociateSoftwareToken {
+  export type Input = {
+    session?: string
+    accessToken?: string
+  }
+
+  export type Output = {
+    publicKey: string
+    session?: string
+  }
+}
