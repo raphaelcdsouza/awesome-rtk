@@ -25,14 +25,12 @@ describe('login', () => {
   const username = 'any_user';
   const challengeNameInput = 'any_challenge_name';
   const mfaCode = 'any_mfa_code';
+  const session = 'any_session';
 
   const tokenType = 'any_token_type';
   const accessToken = 'any_access_token';
   const refreshToken = 'any_refresh_token';
   const idToken = 'any_id_token';
-  const challengeNameOutput = 'any_challenge_name';
-  const session = 'any_session';
-  const sub = 'any_sub';
 
   beforeAll(() => {
     respondToAuthChallengePromiseSpy = jest.fn().mockResolvedValue({
@@ -62,6 +60,7 @@ describe('login', () => {
       SOFTWARE_TOKEN_MFA_CODE: mfaCode,
       SECRET_HASH: undefined as unknown as string,
     },
+    Session: session,
   };
 
   it('should be instance of AwsCognitoTemplate', () => {
@@ -69,68 +68,48 @@ describe('login', () => {
   });
 
   it('should call "respondToAuthChallenge" with correct params', async () => {
-    await sut.execute<ExecuteInput>({ name: challengeName, responses, session }, username);
+    await sut.execute<ExecuteInput>({ name: challengeNameInput, responses: { mfaCode }, session }, username);
 
-    expect(cognitoInterfaceMock.initiateAuth).toHaveBeenCalledWith(respondToAuthObject);
-    expect(cognitoInterfaceMock.initiateAuth).toHaveBeenCalledTimes(1);
+    expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledWith(respondToAuthObject);
+    expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledTimes(1);
   });
 
-  // it('should call "promise" with correct params', async () => {
-  //   await sut.execute<ExecuteInput>({ password }, username);
+  it('should call "promise" with correct params', async () => {
+    await sut.execute<ExecuteInput>({ name: challengeNameInput, responses: { mfaCode }, session }, username);
 
-  //   expect(initiateAuthPromiseSpy).toHaveBeenCalledWith();
-  //   expect(initiateAuthPromiseSpy).toHaveBeenCalledTimes(1);
-  // });
+    expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledWith();
+    expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledTimes(1);
+  });
 
-  // it('should return correct data in case of login without MFA', async () => {
-  //   const result = await sut.execute<ExecuteInput, ExecuteOutput>({ password }, username);
+  it('should return authentication data', async () => {
+    const result = await sut.execute<ExecuteInput, ExecuteOutput>({ name: challengeNameInput, responses: { mfaCode }, session }, username);
 
-  //   expect(result).toEqual({
-  //     authenticationData: {
-  //       tokenType,
-  //       accessToken,
-  //       refreshToken,
-  //       idToken,
-  //     },
-  //   });
-  // });
+    expect(result).toEqual({
+      authenticationData: {
+        tokenType,
+        accessToken,
+        refreshToken,
+        idToken,
+      },
+    });
+  });
 
-  // it('should return correct data in case of login with MFA', async () => {
-  //   initiateAuthPromiseSpy.mockResolvedValueOnce({
-  //     ChallengeName: challengeName,
-  //     Session: session,
-  //     ChallengeParameters: {
-  //       USER_ID_FOR_SRP: sub,
-  //     },
-  //   });
+  describe('with secret hash', () => {
+    beforeEach(() => {
+      sut = new RespondToAuthChallenge({ cognitoInstance: cognitoInterfaceMock, clientId, clientSecret });
+    });
 
-  //   const result = await sut.execute<ExecuteInput, ExecuteOutput>({ password }, username);
+    it('should call "initiateAuth" with correct params', async () => {
+      await sut.execute<ExecuteInput, ExecuteOutput>({ name: challengeNameInput, responses: { mfaCode }, session }, username);
 
-  //   expect(result).toEqual({
-  //     challengeData: {
-  //       challengeName,
-  //       session,
-  //       sub,
-  //     },
-  //   });
-  // });
-
-  // describe('with secret hash', () => {
-  //   beforeEach(() => {
-  //     sut = new Login({ cognitoInstance: cognitoInterfaceMock, clientId, clientSecret });
-  //   });
-
-  //   it('should call "initiateAuth" with correct params', async () => {
-  //     await sut.execute<ExecuteInput>({ password }, username);
-
-  //     expect(cognitoInterfaceMock.initiateAuth).toHaveBeenCalledWith({
-  //       ...loginObject,
-  //       AuthParameters: {
-  //         ...loginObject.AuthParameters,
-  //         SECRET_HASH: 'any_secret_hash',
-  //       },
-  //     });
-  //     expect(cognitoInterfaceMock.initiateAuth).toHaveBeenCalledTimes(1);
-  //   });
-  // });
+      expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledWith({
+        ...respondToAuthObject,
+        ChallengeResponses: {
+          ...respondToAuthObject.ChallengeResponses,
+          SECRET_HASH: 'any_secret_hash',
+        },
+      });
+      expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledTimes(1);
+    });
+  });
 });

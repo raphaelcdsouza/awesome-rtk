@@ -11,26 +11,25 @@ export class RespondToAuthChallenge extends AwsCognitoTemplate {
     super({ clientId, cognitoInstance, clientSecret });
   }
 
-  protected async performAction({ name, responses }: ExecuteInput, username: string, secretHash?: string): Promise<ExecuteOutput> {
-    return {} as any;
+  protected async performAction({ name, session, responses: { mfaCode } }: ExecuteInput, username: string, secretHash?: string): Promise<ExecuteOutput> {
+    const result = await this.serviceInstance.respondToAuthChallenge({
+      ChallengeName: name,
+      ClientId: this.clientId,
+      Session: session,
+      ChallengeResponses: {
+        USERNAME: username,
+        SOFTWARE_TOKEN_MFA_CODE: mfaCode,
+        SECRET_HASH: secretHash!,
+      },
+    }).promise();
 
-    // if (result.AuthenticationResult !== undefined) {
-    //   return {
-    //     authenticationData: {
-    //       tokenType: result.AuthenticationResult!.TokenType!,
-    //       accessToken: result.AuthenticationResult!.AccessToken!,
-    //       refreshToken: result.AuthenticationResult!.RefreshToken!,
-    //       idToken: result.AuthenticationResult!.IdToken!,
-    //     },
-    //   };
-    // }
-
-    // return {
-    //   challengeData: {
-    //     challengeName: result.ChallengeName!,
-    //     session: result.Session!,
-    //     sub: result.ChallengeParameters!.USER_ID_FOR_SRP!,
-    //   },
-    // };
+    return {
+      authenticationData: {
+        tokenType: result.AuthenticationResult!.TokenType!,
+        accessToken: result.AuthenticationResult!.AccessToken!,
+        refreshToken: result.AuthenticationResult!.RefreshToken!,
+        idToken: result.AuthenticationResult!.IdToken!,
+      },
+    };
   }
 }
