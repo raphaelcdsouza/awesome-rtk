@@ -113,7 +113,8 @@ export namespace IRespondToAuthChallenge {
     username: string
     session: string
     responses: {
-      mfaCode: string
+      mfaCode?: string
+      newPassword?: string
     }
   }
 

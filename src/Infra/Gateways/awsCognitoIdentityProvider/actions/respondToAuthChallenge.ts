@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { RespondToAuthChallengeRequest } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+
 import { AwsCognitoTemplate } from '../../Templates/AWS';
 import { IRespondToAuthChallenge } from '../../../Interfaces/Gateways';
 import { AwsCognitoTemplateConstructorParams } from './Types';
@@ -11,17 +13,26 @@ export class RespondToAuthChallenge extends AwsCognitoTemplate {
     super({ clientId, cognitoInstance, clientSecret });
   }
 
-  protected async performAction({ name, session, responses: { mfaCode } }: ExecuteInput, username: string, secretHash?: string): Promise<ExecuteOutput> {
-    const result = await this.serviceInstance.respondToAuthChallenge({
+  protected async performAction({ name, session, responses: { mfaCode, newPassword } }: ExecuteInput, username: string, secretHash?: string): Promise<ExecuteOutput> {
+    const respondToAuthChallengeRequestObject: RespondToAuthChallengeRequest = {
       ChallengeName: name,
       ClientId: this.clientId,
       Session: session,
       ChallengeResponses: {
         USERNAME: username,
-        SOFTWARE_TOKEN_MFA_CODE: mfaCode,
         SECRET_HASH: secretHash!,
       },
-    }).promise();
+    };
+
+    if (mfaCode !== undefined) {
+      respondToAuthChallengeRequestObject.ChallengeResponses!.SOFTWARE_TOKEN_MFA_CODE = mfaCode;
+    }
+
+    if (newPassword !== undefined) {
+      respondToAuthChallengeRequestObject.ChallengeResponses!.NEW_PASSWORD = newPassword;
+    }
+
+    const result = await this.serviceInstance.respondToAuthChallenge(respondToAuthChallengeRequestObject).promise();
 
     return {
       authenticationData: {

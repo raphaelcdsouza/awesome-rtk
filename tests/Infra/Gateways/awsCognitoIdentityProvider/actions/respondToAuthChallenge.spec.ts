@@ -25,6 +25,7 @@ describe('login', () => {
   const username = 'any_user';
   const challengeNameInput = 'any_challenge_name';
   const mfaCode = 'any_mfa_code';
+  const newPassword = 'any_new_password';
   const session = 'any_session';
 
   const tokenType = 'any_token_type';
@@ -67,30 +68,72 @@ describe('login', () => {
     expect(sut).toBeInstanceOf(AwsCognitoTemplate);
   });
 
-  it('should call "respondToAuthChallenge" with correct params', async () => {
-    await sut.execute<ExecuteInput>({ name: challengeNameInput, responses: { mfaCode }, session }, username);
+  describe('respond to MFA challenge', () => {
+    it('should call "respondToAuthChallenge" with correct params', async () => {
+      await sut.execute<ExecuteInput>({ name: challengeNameInput, responses: { mfaCode, newPassword: undefined }, session }, username);
 
-    expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledWith(respondToAuthObject);
-    expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledTimes(1);
+      expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledWith(respondToAuthObject);
+      expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call "promise" with correct params', async () => {
+      await sut.execute<ExecuteInput>({ name: challengeNameInput, responses: { mfaCode, newPassword: undefined }, session }, username);
+
+      expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledWith();
+      expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return authentication data', async () => {
+      const result = await sut.execute<ExecuteInput, ExecuteOutput>({ name: challengeNameInput, responses: { mfaCode, newPassword: undefined }, session }, username);
+
+      expect(result).toEqual({
+        authenticationData: {
+          tokenType,
+          accessToken,
+          refreshToken,
+          idToken,
+        },
+      });
+    });
   });
 
-  it('should call "promise" with correct params', async () => {
-    await sut.execute<ExecuteInput>({ name: challengeNameInput, responses: { mfaCode }, session }, username);
-
-    expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledWith();
-    expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('should return authentication data', async () => {
-    const result = await sut.execute<ExecuteInput, ExecuteOutput>({ name: challengeNameInput, responses: { mfaCode }, session }, username);
-
-    expect(result).toEqual({
-      authenticationData: {
-        tokenType,
-        accessToken,
-        refreshToken,
-        idToken,
+  describe('respond to MFA challenge', () => {
+    const respondToAuthObjectForNewPassword = {
+      ChallengeName: challengeNameInput,
+      ClientId: clientId,
+      ChallengeResponses: {
+        USERNAME: username,
+        NEW_PASSWORD: newPassword,
+        SECRET_HASH: undefined as unknown as string,
       },
+      Session: session,
+    };
+
+    it('should call "respondToAuthChallenge" with correct params', async () => {
+      await sut.execute<ExecuteInput>({ name: challengeNameInput, responses: { mfaCode: undefined, newPassword }, session }, username);
+
+      expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledWith(respondToAuthObjectForNewPassword);
+      expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call "promise" with correct params', async () => {
+      await sut.execute<ExecuteInput>({ name: challengeNameInput, responses: { mfaCode: undefined, newPassword }, session }, username);
+
+      expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledWith();
+      expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return authentication data', async () => {
+      const result = await sut.execute<ExecuteInput, ExecuteOutput>({ name: challengeNameInput, responses: { mfaCode: undefined, newPassword }, session }, username);
+
+      expect(result).toEqual({
+        authenticationData: {
+          tokenType,
+          accessToken,
+          refreshToken,
+          idToken,
+        },
+      });
     });
   });
 
