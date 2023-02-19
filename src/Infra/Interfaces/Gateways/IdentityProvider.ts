@@ -127,3 +127,15 @@ export namespace IRespondToAuthChallenge {
     }
   }
 }
+
+export interface IToggleMFA {
+  toggleMFA: (params: IToggleMFA.Input) => Promise<void>
+}
+
+export namespace IToggleMFA {
+  export type Input = {
+    accessToken: string
+    enabled: boolean
+    preferred: boolean
+  }
+}
