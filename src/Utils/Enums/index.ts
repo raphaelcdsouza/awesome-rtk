@@ -16,6 +16,7 @@ export const HTTP_ERROR_CODES = {
 };
 
 export const AWS_ERROR_CODES = {
+  CREDENTIALS: 'CredentialsError',
   S3: {
     NOT_FOUND: 'NoSuchKey',
     UNEXISTENT_BUCKET: 'NoSuchBucket',
@@ -28,11 +29,13 @@ export const AWS_ERROR_CODES = {
     USERNAME_EXISTS: 'UsernameExistsException',
     INVALID_PARAMETER: 'InvalidParameterException',
     INVALID_PASSWORD: 'InvalidPasswordException',
+    EXPIRED_CODE: 'ExpiredCodeException',
   },
 };
 
 export const ERRORS = {
   UNKNOWN: 'E00000',
+  CREDENTIALS: 'E00001',
   HTTP: {
     UNKNOWN: 'E01000',
     NOT_FOUND: 'E01001',
@@ -60,5 +63,6 @@ export const ERRORS = {
     USERNAME_EXISTS: 'E03103',
     INVALID_PARAMETER: 'E03104',
     INVALID_PASSWORD: 'E03105',
+    EXPIRED_CODE: 'E03106',
   },
 };

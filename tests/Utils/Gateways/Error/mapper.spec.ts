@@ -73,6 +73,14 @@ describe('gateways mappers', () => {
       expect(awsErrorMapper(AWS_ERROR_CODES.COGNITO.INVALID_PASSWORD, 'cognito')).toBe(ERRORS.IDENTITY_PROVIDER.INVALID_PASSWORD);
     });
 
+    it('should return "E03106" when "ExpiredCodeExcepetion" is passed', () => {
+      expect(awsErrorMapper(AWS_ERROR_CODES.COGNITO.EXPIRED_CODE, 'cognito')).toBe(ERRORS.IDENTITY_PROVIDER.EXPIRED_CODE);
+    });
+
+    it('should return "E00001" when "CredentialsError" is passed', () => {
+      expect(awsErrorMapper(AWS_ERROR_CODES.CREDENTIALS, 'cognito')).toBe(ERRORS.CREDENTIALS);
+    });
+
     it('should return "E03100" when 0 is passed', () => {
       expect(awsErrorMapper('0', 'cognito')).toBe(ERRORS.IDENTITY_PROVIDER.UNKNOWN);
     });

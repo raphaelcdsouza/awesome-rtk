@@ -43,6 +43,10 @@ export const awsErrorMapper = (code: string, service?: 's3' | 'cognito'): string
         return ERRORS.IDENTITY_PROVIDER.INVALID_PARAMETER;
       case AWS_ERROR_CODES.COGNITO.INVALID_PASSWORD:
         return ERRORS.IDENTITY_PROVIDER.INVALID_PASSWORD;
+      case AWS_ERROR_CODES.COGNITO.EXPIRED_CODE:
+        return ERRORS.IDENTITY_PROVIDER.EXPIRED_CODE;
+      case AWS_ERROR_CODES.CREDENTIALS:
+        return ERRORS.CREDENTIALS;
       default:
         return ERRORS.IDENTITY_PROVIDER.UNKNOWN;
     }
