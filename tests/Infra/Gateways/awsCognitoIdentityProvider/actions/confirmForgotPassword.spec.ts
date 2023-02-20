@@ -62,7 +62,7 @@ describe('associateSoftwareToken', () => {
     expect(confirmForgotPasswordPromiseSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should return correct data in case of login with MFA', async () => {
+  it('should return correct data', async () => {
     const result = await sut.execute<ExecuteInput>({ newPassword, code }, username);
 
     expect(result).toBeUndefined();

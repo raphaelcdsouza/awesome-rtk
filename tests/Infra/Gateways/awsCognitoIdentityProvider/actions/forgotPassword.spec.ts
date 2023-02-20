@@ -69,7 +69,7 @@ describe('associateSoftwareToken', () => {
     expect(forgotPasswordPromiseSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should return correct data in case of login with MFA', async () => {
+  it('should return correct data', async () => {
     const result = await sut.execute<ExecuteInput, ExecuteOutput>(undefined, username);
 
     expect(result).toEqual({
