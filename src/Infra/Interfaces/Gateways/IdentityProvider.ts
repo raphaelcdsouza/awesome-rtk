@@ -183,7 +183,7 @@ export namespace IChangePassword {
 }
 
 export interface IForgotPassword {
-  forgotPassword: (params: IForgotPassword.Input) => Promise<void | IForgotPassword.Output>
+  forgotPassword: (params: IForgotPassword.Input) => Promise<IForgotPassword.Output>
 }
 
 export namespace IForgotPassword {
@@ -191,4 +191,16 @@ export namespace IForgotPassword {
     username: string
   }
   export type Output = DeliveryDetailsType
+}
+
+export interface IConfirmForgotPassword {
+  confirmForgotPassword: (params: IConfirmForgotPassword.Input) => Promise<void>
+}
+
+export namespace IConfirmForgotPassword {
+  export type Input = {
+    username: string
+    newPassword: string
+    code: string
+  }
 }
