@@ -153,7 +153,7 @@ export interface IUpdateUserAttributes {
 export namespace IUpdateUserAttributes {
   export type Input = {
     accessToken: string
-    attributes: Record<'Name' | 'Value', string>[]
+    attributes: AttributesType[]
   }
   export type Output = DeliveryDetailsType[]
 }
