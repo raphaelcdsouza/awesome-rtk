@@ -167,3 +167,15 @@ export namespace IVerifyUserAttribute {
     code: string
   }
 }
+
+export interface IChangePassword {
+  toggleMFA: (params: IChangePassword.Input) => Promise<void>
+}
+
+export namespace IChangePassword {
+  export type Input = {
+    accessToken: string
+    newPassword: string
+    oldPassword: string
+  }
+}

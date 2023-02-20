@@ -8,3 +8,4 @@ export * from './respondToAuthChallenge';
 export * from './toggleMFA';
 export * from './updateUserAttributes';
 export * from './verifyUserAttribute';
+export * from './changePassword';
