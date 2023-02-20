@@ -3,6 +3,12 @@ type AttributesType = {
   Value?: string,
 }
 
+type DeliveryDetailsType = {
+  deliveryMethod: string
+  destination: string
+  attribute: string
+}
+
 export interface ISignUp {
   signUp: (params: ISignUp.Input) => Promise<ISignUp.Output>
 }
@@ -149,15 +155,11 @@ export namespace IUpdateUserAttributes {
     accessToken: string
     attributes: Record<'Name' | 'Value', string>[]
   }
-  export type Output = {
-    deliveryMethod: string
-    destination: string
-    attribute: string
-  }[]
+  export type Output = DeliveryDetailsType[]
 }
 
 export interface IVerifyUserAttribute {
-  toggleMFA: (params: IVerifyUserAttribute.Input) => Promise<void>
+  verifyUserAttribute: (params: IVerifyUserAttribute.Input) => Promise<void>
 }
 
 export namespace IVerifyUserAttribute {
@@ -169,7 +171,7 @@ export namespace IVerifyUserAttribute {
 }
 
 export interface IChangePassword {
-  toggleMFA: (params: IChangePassword.Input) => Promise<void>
+  changePassword: (params: IChangePassword.Input) => Promise<void>
 }
 
 export namespace IChangePassword {
@@ -178,4 +180,15 @@ export namespace IChangePassword {
     newPassword: string
     oldPassword: string
   }
+}
+
+export interface IForgotPassword {
+  forgotPassword: (params: IForgotPassword.Input) => Promise<void | IForgotPassword.Output>
+}
+
+export namespace IForgotPassword {
+  export type Input = {
+    username: string
+  }
+  export type Output = DeliveryDetailsType
 }

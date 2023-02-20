@@ -9,3 +9,4 @@ export * from './toggleMFA';
 export * from './updateUserAttributes';
 export * from './verifyUserAttribute';
 export * from './changePassword';
+export * from './forgotPassword';
