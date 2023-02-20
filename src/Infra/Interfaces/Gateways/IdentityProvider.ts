@@ -204,3 +204,13 @@ export namespace IConfirmForgotPassword {
     code: string
   }
 }
+
+export interface IDeleteUser {
+  deleteUser: (params: IDeleteUser.Input) => Promise<void>
+}
+
+export namespace IDeleteUser {
+  export type Input = {
+    accessToken: string
+  }
+}
