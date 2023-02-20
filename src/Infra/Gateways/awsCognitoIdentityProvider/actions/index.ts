@@ -6,3 +6,4 @@ export * from './associateSoftwareToken';
 export * from './verifySoftwareToken';
 export * from './respondToAuthChallenge';
 export * from './toggleMFA';
+export * from './updateUserAttributes';

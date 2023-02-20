@@ -139,3 +139,19 @@ export namespace IToggleMFA {
     preferred: boolean
   }
 }
+
+export interface IUpdateUserAttributes {
+  updateUserAttributes: (params: IUpdateUserAttributes.Input) => Promise<void | IUpdateUserAttributes.Output>
+}
+
+export namespace IUpdateUserAttributes {
+  export type Input = {
+    accessToken: string
+    attributes: Record<'Name' | 'Value', string>[]
+  }
+  export type Output = {
+    deliveryMethod: string
+    destination: string
+    attribute: string
+  }[]
+}
