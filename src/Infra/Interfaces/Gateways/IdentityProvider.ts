@@ -155,3 +155,15 @@ export namespace IUpdateUserAttributes {
     attribute: string
   }[]
 }
+
+export interface IVerifyUserAttribute {
+  toggleMFA: (params: IVerifyUserAttribute.Input) => Promise<void>
+}
+
+export namespace IVerifyUserAttribute {
+  export type Input = {
+    accessToken: string
+    attribute: string
+    code: string
+  }
+}
