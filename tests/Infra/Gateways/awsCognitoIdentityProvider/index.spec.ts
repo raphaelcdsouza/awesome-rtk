@@ -102,4 +102,64 @@ describe('awsCognitoIdentityProvider', () => {
       await expect(promise).rejects.toThrow(error);
     });
   });
+
+  describe('confirmSignUp', () => {
+    const username = 'any_username';
+    const code = 'any_code';
+
+    const confirmSignUpParamsObject = {
+      code,
+    };
+
+    let confirmSignUpExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      confirmSignUpExecuteSpy = jest.fn().mockResolvedValue(undefined);
+      jest.mocked(Actions.ConfirmSignUp).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: confirmSignUpExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "ConfirmSignUp" action with correct params - without "clientSecret"', async () => {
+        await sut.confirmSignUp({ username, code });
+
+        expect(Actions.ConfirmSignUp).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret: undefined });
+        expect(Actions.ConfirmSignUp).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "SignUp" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.confirmSignUp({ username, code });
+
+        expect(Actions.ConfirmSignUp).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.ConfirmSignUp).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.confirmSignUp({ username, code });
+
+      expect(confirmSignUpExecuteSpy).toHaveBeenCalledWith(confirmSignUpParamsObject, username);
+      expect(confirmSignUpExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return undefined', async () => {
+      const result = await sut.confirmSignUp({ username, code });
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_confirmsignup_error');
+      confirmSignUpExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.confirmSignUp({ username, code });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
 });
