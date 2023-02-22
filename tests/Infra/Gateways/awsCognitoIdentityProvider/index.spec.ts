@@ -128,7 +128,7 @@ describe('awsCognitoIdentityProvider', () => {
         expect(Actions.ConfirmSignUp).toHaveBeenCalledTimes(1);
       });
 
-      it('should instantiate "SignUp" action with correct params - with "clientSecret"', async () => {
+      it('should instantiate "ConfirmSignUp" action with correct params - with "clientSecret"', async () => {
         const optionalSut = new AwsCognitoIdentityProvider({
           region, accessKeyId, secretAccessKey, clientId, clientSecret,
         });
@@ -158,6 +158,98 @@ describe('awsCognitoIdentityProvider', () => {
       confirmSignUpExecuteSpy.mockRejectedValueOnce(error);
 
       const promise = sut.confirmSignUp({ username, code });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
+
+  describe('login', () => {
+    const username = 'any_username';
+    const password = 'any_password';
+
+    const loginParamsObject = {
+      password,
+    };
+
+    const tokenType = 'any_token_type';
+    const accessToken = 'any_access_token';
+    const refreshToken = 'any_refresh_token';
+    const idToken = 'any_id_token';
+
+    const loginReturnObjectWithAuthenticationData = {
+      tokenType,
+      accessToken,
+      refreshToken,
+      idToken,
+    };
+
+    const challengeName = 'any_challenge_name';
+    const sub = 'any_sub';
+    const session = 'any_session';
+
+    const loginReturnObjectWithChallengeData = {
+      challengeName,
+      sub,
+      session,
+    };
+
+    let loginExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      loginExecuteSpy = jest.fn().mockResolvedValue(loginReturnObjectWithAuthenticationData);
+      jest.mocked(Actions.Login).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: loginExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "Login" action with correct params - without "clientSecret"', async () => {
+        await sut.login({ username, password });
+
+        expect(Actions.Login).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret: undefined });
+        expect(Actions.Login).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "Login" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.login({ username, password });
+
+        expect(Actions.Login).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.Login).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.login({ username, password });
+
+      expect(loginExecuteSpy).toHaveBeenCalledWith(loginParamsObject, username);
+      expect(loginExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    describe('return data', () => {
+      it('should return authentication data if "execute" returns "authenticationData"', async () => {
+        const result = await sut.login({ username, password });
+
+        expect(result).toEqual(loginReturnObjectWithAuthenticationData);
+      });
+
+      it('should return challenge data if "execute" returns "challengeData"', async () => {
+        loginExecuteSpy.mockResolvedValueOnce(loginReturnObjectWithChallengeData);
+
+        const result = await sut.login({ username, password });
+
+        expect(result).toEqual(loginReturnObjectWithChallengeData);
+      });
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_login_error');
+      loginExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.login({ username, password });
 
       await expect(promise).rejects.toThrow(error);
     });

@@ -1,5 +1,6 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
+import { AwsCognitoTemplate } from '../Templates/AWS';
 import * as Interfaces from '../../Interfaces/Gateways';
 import * as Actions from './actions';
 
@@ -8,6 +9,12 @@ type AwsCognitoIdentityProviderConstructorParams = {
   accessKeyId: string;
   secretAccessKey: string;
   clientId: string;
+  clientSecret?: string;
+}
+
+type AwsCognitoIdentityProviderActionConstructorParams = {
+  clientId: string;
+  cognitoInstance: CognitoIdentityServiceProvider;
   clientSecret?: string;
 }
 
@@ -33,12 +40,21 @@ export class AwsCognitoIdentityProvider implements Interfaces.ISignUp, Interface
   }
 
   async signUp({ username, password, attributes }: Interfaces.ISignUp.Input): Promise<Interfaces.ISignUp.Output> {
-    const action = new Actions.SignUp({ clientId: this.clientId, cognitoInstance: this.cognitoInstance, clientSecret: this.clientSecret });
+    const action = this.buildActionInstance(Actions.SignUp);
     return action.execute<Omit<Interfaces.ISignUp.Input, 'username'>, Interfaces.ISignUp.Output>({ password, attributes }, username);
   }
 
   async confirmSignUp({ username, code }: Interfaces.IConfirmSignUp.Input): Promise<void> {
-    const action = new Actions.ConfirmSignUp({ clientId: this.clientId, cognitoInstance: this.cognitoInstance, clientSecret: this.clientSecret });
+    const action = this.buildActionInstance(Actions.ConfirmSignUp);
     await action.execute<Omit<Interfaces.IConfirmSignUp.Input, 'username'>, undefined>({ code }, username);
+  }
+
+  async login({ username, password }: Interfaces.ILogin.Input): Promise<Interfaces.ILogin.Output> {
+    const action = this.buildActionInstance(Actions.Login);
+    return action.execute<Omit<Interfaces.ILogin.Input, 'username'>, Interfaces.ILogin.Output>({ password }, username);
+  }
+
+  private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {
+    return new Action({ clientId: this.clientId, cognitoInstance: this.cognitoInstance, clientSecret: this.clientSecret });
   }
 }
