@@ -525,4 +525,80 @@ describe('awsCognitoIdentityProvider', () => {
       await expect(promise).rejects.toThrow(error);
     });
   });
+
+  describe('updateUserAttributes', () => {
+    const accessToken = 'any_access_token';
+    const attributes = [
+      { Name: 'any_name_1', Value: 'any_value_1' },
+      { Name: 'any_name_2', Value: 'any_value_2' },
+    ];
+
+    const updateUserAttributesParamsObject = {
+      accessToken,
+      attributes,
+    };
+
+    const deliveryMethod = 'any_delivery_method';
+    const destination = 'any_destination';
+    const attribute = 'any_attribute';
+
+    const updateUserAttributesReturnObject = [
+      {
+        deliveryMethod,
+        destination,
+        attribute,
+      },
+    ];
+
+    let updateUserAttributesExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      updateUserAttributesExecuteSpy = jest.fn().mockResolvedValue(updateUserAttributesReturnObject);
+      jest.mocked(Actions.UpdateUserAttributes).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: updateUserAttributesExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "UpdateUserAttributes" action with correct params - without "clientSecret"', async () => {
+        await sut.updateUserAttributes({ accessToken, attributes });
+
+        expect(Actions.UpdateUserAttributes).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret: undefined });
+        expect(Actions.UpdateUserAttributes).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "UpdateUserAttributes" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.updateUserAttributes({ accessToken, attributes });
+
+        expect(Actions.UpdateUserAttributes).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.UpdateUserAttributes).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.updateUserAttributes({ accessToken, attributes });
+
+      expect(updateUserAttributesExecuteSpy).toHaveBeenCalledWith(updateUserAttributesParamsObject);
+      expect(updateUserAttributesExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return correct data', async () => {
+      const result = await sut.updateUserAttributes({ accessToken, attributes });
+
+      expect(result).toEqual(updateUserAttributesReturnObject);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_updateUserAttributes_error');
+      updateUserAttributesExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.updateUserAttributes({ accessToken, attributes });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
 });

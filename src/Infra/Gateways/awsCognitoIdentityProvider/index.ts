@@ -25,7 +25,8 @@ implements
   Interfaces.ILogin,
   Interfaces.IAssociateSoftwareToken,
   Interfaces.IVerifySoftwareToken,
-  Interfaces.IRespondToAuthChallenge {
+  Interfaces.IRespondToAuthChallenge,
+  Interfaces.IUpdateUserAttributes {
   private readonly cognitoInstance: CognitoIdentityServiceProvider;
 
   private readonly clientId: string;
@@ -76,6 +77,11 @@ implements
   }: Interfaces.IRespondToAuthChallenge.Input): Promise<Interfaces.IRespondToAuthChallenge.Output> {
     const action = this.buildActionInstance(Actions.RespondToAuthChallenge);
     return action.execute<Omit<Interfaces.IRespondToAuthChallenge.Input, 'username'>, Interfaces.IRespondToAuthChallenge.Output>({ name, session, responses }, username);
+  }
+
+  async updateUserAttributes({ accessToken, attributes }: Interfaces.IUpdateUserAttributes.Input): Promise<Interfaces.IUpdateUserAttributes.Output> {
+    const action = this.buildActionInstance(Actions.UpdateUserAttributes);
+    return action.execute<Interfaces.IUpdateUserAttributes.Input, Interfaces.IUpdateUserAttributes.Output>({ accessToken, attributes });
   }
 
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {
