@@ -601,4 +601,61 @@ describe('awsCognitoIdentityProvider', () => {
       await expect(promise).rejects.toThrow(error);
     });
   });
+
+  describe('verifyUserAttribute', () => {
+    const accessToken = 'any_access_token';
+    const attribute = 'any_attribute';
+    const code = 'any_code';
+
+    const verifyUserAttributeParamsObject = {
+      accessToken,
+      attribute,
+      code,
+    };
+
+    let verifyUserAttributesExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      verifyUserAttributesExecuteSpy = jest.fn().mockResolvedValue(undefined);
+      jest.mocked(Actions.VerifyUserAttribute).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: verifyUserAttributesExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "VerifyUserAttribute" action with correct params - without "clientSecret"', async () => {
+        await sut.verifyUserAttribute({ accessToken, attribute, code });
+
+        expect(Actions.VerifyUserAttribute).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret: undefined });
+        expect(Actions.VerifyUserAttribute).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "VerifyUserAttribute" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.verifyUserAttribute({ accessToken, attribute, code });
+
+        expect(Actions.VerifyUserAttribute).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.VerifyUserAttribute).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.verifyUserAttribute({ accessToken, attribute, code });
+
+      expect(verifyUserAttributesExecuteSpy).toHaveBeenCalledWith(verifyUserAttributeParamsObject);
+      expect(verifyUserAttributesExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_verifyUserAttribute_error');
+      verifyUserAttributesExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.verifyUserAttribute({ accessToken, attribute, code });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
 });
