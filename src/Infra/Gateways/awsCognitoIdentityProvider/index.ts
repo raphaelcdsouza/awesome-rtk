@@ -24,7 +24,8 @@ implements
   Interfaces.IConfirmSignUp,
   Interfaces.ILogin,
   Interfaces.IAssociateSoftwareToken,
-  Interfaces.IVerifySoftwareToken {
+  Interfaces.IVerifySoftwareToken,
+  Interfaces.IRespondToAuthChallenge {
   private readonly cognitoInstance: CognitoIdentityServiceProvider;
 
   private readonly clientId: string;
@@ -68,6 +69,13 @@ implements
   async verifySoftwareToken({ session, accessToken, mfaCode }: Interfaces.IVerifySoftwareToken.Input): Promise<Interfaces.IVerifySoftwareToken.Output> {
     const action = this.buildActionInstance(Actions.VerifySoftwareToken);
     return action.execute<Interfaces.IVerifySoftwareToken.Input, Interfaces.IVerifySoftwareToken.Output>({ session, accessToken, mfaCode });
+  }
+
+  async respondToAuthChallenge({
+    name, username, session, responses,
+  }: Interfaces.IRespondToAuthChallenge.Input): Promise<Interfaces.IRespondToAuthChallenge.Output> {
+    const action = this.buildActionInstance(Actions.RespondToAuthChallenge);
+    return action.execute<Omit<Interfaces.IRespondToAuthChallenge.Input, 'username'>, Interfaces.IRespondToAuthChallenge.Output>({ name, session, responses }, username);
   }
 
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {

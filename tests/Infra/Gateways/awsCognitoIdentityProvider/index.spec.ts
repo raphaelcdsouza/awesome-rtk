@@ -421,4 +421,108 @@ describe('awsCognitoIdentityProvider', () => {
       await expect(promise).rejects.toThrow(error);
     });
   });
+
+  describe('respondToAuthChallenge', () => {
+    const name = 'any_name';
+    const username = 'any_user_name';
+    const session = 'any_session';
+    const mfaCode = 'any_mfa_code';
+    const newPassword = 'any_new_password';
+
+    const responses = {
+      mfaCode,
+    };
+
+    const respondToAuthChallengeParamsObject = {
+      name,
+      session,
+      responses,
+    };
+
+    const tokenType = 'any_token_type';
+    const accessToken = 'any_access_token';
+    const refreshToken = 'any_refresh_token';
+    const idToken = 'any_id_token';
+
+    const respondToAuthChallengeReturnObject = {
+      authenticationData: {
+        tokenType,
+        accessToken,
+        refreshToken,
+        idToken,
+      },
+    };
+
+    let respondToAuthChallengeExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      respondToAuthChallengeExecuteSpy = jest.fn().mockResolvedValue(respondToAuthChallengeReturnObject);
+      jest.mocked(Actions.RespondToAuthChallenge).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: respondToAuthChallengeExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "RespondToAuthChallenge" action with correct params - without "clientSecret"', async () => {
+        await sut.respondToAuthChallenge({
+          name, session, username, responses,
+        });
+
+        expect(Actions.RespondToAuthChallenge).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret: undefined });
+        expect(Actions.RespondToAuthChallenge).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "RespondToAuthChallenge" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.respondToAuthChallenge({
+          name, session, username, responses,
+        });
+
+        expect(Actions.RespondToAuthChallenge).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.RespondToAuthChallenge).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('input data', () => {
+      it('should call "execute" method with correct params when "mfaCode" provided', async () => {
+        await sut.respondToAuthChallenge({
+          name, session, username, responses,
+        });
+
+        expect(respondToAuthChallengeExecuteSpy).toHaveBeenCalledWith(respondToAuthChallengeParamsObject, username);
+        expect(respondToAuthChallengeExecuteSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('should call "execute" method with correct params when "newPassword" provided', async () => {
+        await sut.respondToAuthChallenge({
+          name, session, username, responses: { newPassword },
+        });
+
+        expect(respondToAuthChallengeExecuteSpy).toHaveBeenCalledWith({ name, session, responses: { newPassword } }, username);
+        expect(respondToAuthChallengeExecuteSpy).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should return correct data', async () => {
+      const result = await sut.respondToAuthChallenge({
+        name, session, username, responses,
+      });
+
+      expect(result).toEqual(respondToAuthChallengeReturnObject);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_respondToAuthChallenge_error');
+      respondToAuthChallengeExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.respondToAuthChallenge({
+        name, session, username, responses,
+      });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
 });
