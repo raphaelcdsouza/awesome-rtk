@@ -332,4 +332,93 @@ describe('awsCognitoIdentityProvider', () => {
       await expect(promise).rejects.toThrow(error);
     });
   });
+
+  describe('verifySoftwareToken', () => {
+    const session = 'any_session';
+    const accessToken = 'any_access_token';
+    const mfaCode = 'any_mfa_code';
+
+    const verifySoftwareTokenParamsObject = {
+      session,
+      accessToken,
+      mfaCode,
+    };
+
+    const status = 'any_status';
+    const returnedSession = 'any_returned_session';
+
+    const verifySoftwareTokenReturnObject = {
+      status,
+    };
+
+    let verifySoftwareTokenExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      verifySoftwareTokenExecuteSpy = jest.fn().mockResolvedValue(verifySoftwareTokenReturnObject);
+      jest.mocked(Actions.VerifySoftwareToken).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: verifySoftwareTokenExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "VerifySoftwareToken" action with correct params - without "clientSecret"', async () => {
+        await sut.verifySoftwareToken({ session, accessToken, mfaCode });
+
+        expect(Actions.VerifySoftwareToken).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret: undefined });
+        expect(Actions.VerifySoftwareToken).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "VerifySoftwareToken" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.verifySoftwareToken({ session, accessToken, mfaCode });
+
+        expect(Actions.VerifySoftwareToken).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.VerifySoftwareToken).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('input data', () => {
+      it('should call "execute" method with correct params when "session" and "accessCode" provided', async () => {
+        await sut.verifySoftwareToken({ session, accessToken, mfaCode });
+
+        expect(verifySoftwareTokenExecuteSpy).toHaveBeenCalledWith(verifySoftwareTokenParamsObject);
+        expect(verifySoftwareTokenExecuteSpy).toHaveBeenCalledTimes(1);
+      });
+
+      it('should call "execute" method with correct params when "session" and "accessCode" not provided', async () => {
+        await sut.verifySoftwareToken({ mfaCode });
+
+        expect(verifySoftwareTokenExecuteSpy).toHaveBeenCalledWith({ mfaCode });
+        expect(verifySoftwareTokenExecuteSpy).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('return data', () => {
+      it('should return correct data without "session" property', async () => {
+        const result = await sut.verifySoftwareToken({ session, accessToken, mfaCode });
+
+        expect(result).toEqual(verifySoftwareTokenReturnObject);
+      });
+
+      it('should return correct data with "session" property', async () => {
+        verifySoftwareTokenExecuteSpy.mockResolvedValueOnce({ ...verifySoftwareTokenReturnObject, session: returnedSession });
+
+        const result = await sut.verifySoftwareToken({ session, accessToken, mfaCode });
+
+        expect(result).toEqual({ ...verifySoftwareTokenReturnObject, session: returnedSession });
+      });
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_verifySoftwareToken_error');
+      verifySoftwareTokenExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.verifySoftwareToken({ session, accessToken, mfaCode });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
 });
