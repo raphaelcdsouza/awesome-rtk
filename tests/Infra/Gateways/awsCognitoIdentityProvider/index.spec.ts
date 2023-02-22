@@ -254,4 +254,82 @@ describe('awsCognitoIdentityProvider', () => {
       await expect(promise).rejects.toThrow(error);
     });
   });
+
+  describe('associateSoftwareToken', () => {
+    const session = 'any_session';
+    const accessToken = 'any_access_token';
+
+    const associateSoftwareTokenParamsObject = {
+      session,
+      accessToken,
+    };
+
+    const publicKey = 'any_public_key';
+    const returnedSession = 'any_returned_session';
+
+    const associateSoftwareTokenReturnObject = {
+      publicKey,
+    };
+
+    let associateSoftwareTokenExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      associateSoftwareTokenExecuteSpy = jest.fn().mockResolvedValue(associateSoftwareTokenReturnObject);
+      jest.mocked(Actions.AssociateSoftwareToken).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: associateSoftwareTokenExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "AssociateSoftwareToken" action with correct params - without "clientSecret"', async () => {
+        await sut.associateSoftwareToken({ session, accessToken });
+
+        expect(Actions.AssociateSoftwareToken).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret: undefined });
+        expect(Actions.AssociateSoftwareToken).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "AssociateSoftwareToken" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.associateSoftwareToken({ session, accessToken });
+
+        expect(Actions.AssociateSoftwareToken).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.AssociateSoftwareToken).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.associateSoftwareToken({ session, accessToken });
+
+      expect(associateSoftwareTokenExecuteSpy).toHaveBeenCalledWith(associateSoftwareTokenParamsObject);
+      expect(associateSoftwareTokenExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    describe('return data', () => {
+      it('should return authentication data if "execute" returns "authenticationData"', async () => {
+        const result = await sut.associateSoftwareToken({ session, accessToken });
+
+        expect(result).toEqual(associateSoftwareTokenReturnObject);
+      });
+
+      it('should return challenge data if "execute" returns "challengeData"', async () => {
+        associateSoftwareTokenExecuteSpy.mockResolvedValueOnce({ ...associateSoftwareTokenReturnObject, session: returnedSession });
+
+        const result = await sut.associateSoftwareToken({ session, accessToken });
+
+        expect(result).toEqual({ ...associateSoftwareTokenReturnObject, session: returnedSession });
+      });
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_associateSoftwareToken_error');
+      associateSoftwareTokenExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.associateSoftwareToken({ session, accessToken });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
 });

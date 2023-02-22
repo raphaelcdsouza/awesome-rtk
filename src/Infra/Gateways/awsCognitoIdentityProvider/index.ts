@@ -18,7 +18,12 @@ type AwsCognitoIdentityProviderActionConstructorParams = {
   clientSecret?: string;
 }
 
-export class AwsCognitoIdentityProvider implements Interfaces.ISignUp, Interfaces.IConfirmSignUp {
+export class AwsCognitoIdentityProvider
+implements
+  Interfaces.ISignUp,
+  Interfaces.IConfirmSignUp,
+  Interfaces.ILogin,
+  Interfaces.IAssociateSoftwareToken {
   private readonly cognitoInstance: CognitoIdentityServiceProvider;
 
   private readonly clientId: string;
@@ -52,6 +57,11 @@ export class AwsCognitoIdentityProvider implements Interfaces.ISignUp, Interface
   async login({ username, password }: Interfaces.ILogin.Input): Promise<Interfaces.ILogin.Output> {
     const action = this.buildActionInstance(Actions.Login);
     return action.execute<Omit<Interfaces.ILogin.Input, 'username'>, Interfaces.ILogin.Output>({ password }, username);
+  }
+
+  async associateSoftwareToken({ session, accessToken }: Interfaces.IAssociateSoftwareToken.Input): Promise<Interfaces.IAssociateSoftwareToken.Output> {
+    const action = this.buildActionInstance(Actions.AssociateSoftwareToken);
+    return action.execute<Interfaces.IAssociateSoftwareToken.Input, Interfaces.IAssociateSoftwareToken.Output>({ session, accessToken });
   }
 
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {
