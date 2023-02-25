@@ -90,6 +90,11 @@ implements
     await action.execute<Interfaces.IVerifyUserAttribute.Input, undefined>({ accessToken, attribute, code });
   }
 
+  async changePassword({ accessToken, oldPassword, newPassword }: Interfaces.IChangePassword.Input): Promise<void> {
+    const action = this.buildActionInstance(Actions.ChangePassword);
+    await action.execute<Interfaces.IChangePassword.Input, undefined>({ accessToken, oldPassword, newPassword });
+  }
+
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {
     return new Action({ clientId: this.clientId, cognitoInstance: this.cognitoInstance, clientSecret: this.clientSecret });
   }

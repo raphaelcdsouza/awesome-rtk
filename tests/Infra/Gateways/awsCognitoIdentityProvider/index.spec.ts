@@ -658,4 +658,50 @@ describe('awsCognitoIdentityProvider', () => {
       await expect(promise).rejects.toThrow(error);
     });
   });
+
+  describe('changePassword', () => {
+    const accessToken = 'any_access_token';
+    const oldPassword = 'any_old_password';
+    const newPassword = 'any_new_password';
+
+    const changePasswordParamsObject = {
+      accessToken,
+      oldPassword,
+      newPassword,
+    };
+
+    let changePasswordExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      changePasswordExecuteSpy = jest.fn().mockResolvedValue(undefined);
+      jest.mocked(Actions.ChangePassword).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: changePasswordExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "ChangePassword" action with correct params', async () => {
+        await sut.changePassword({ accessToken, oldPassword, newPassword });
+
+        expect(Actions.ChangePassword).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider) });
+        expect(Actions.ChangePassword).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.changePassword({ accessToken, oldPassword, newPassword });
+
+      expect(changePasswordExecuteSpy).toHaveBeenCalledWith(changePasswordParamsObject);
+      expect(changePasswordExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_changePassword_error');
+      changePasswordExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.changePassword({ accessToken, oldPassword, newPassword });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
 });
