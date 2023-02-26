@@ -31,7 +31,8 @@ implements
   Interfaces.IChangePassword,
   Interfaces.IForgotPassword,
   Interfaces.IConfirmForgotPassword,
-  Interfaces.IToggleMFA {
+  Interfaces.IToggleMFA,
+  Interfaces.IDeleteUser {
   private readonly cognitoInstance: CognitoIdentityServiceProvider;
 
   private readonly clientId: string;
@@ -112,6 +113,11 @@ implements
   async toggleMFA({ accessToken, enabled, preferred }: Interfaces.IToggleMFA.Input): Promise<void> {
     const action = this.buildActionInstance(Actions.ToggleMFA);
     await action.execute<Interfaces.IToggleMFA.Input, undefined>({ accessToken, enabled, preferred });
+  }
+
+  async deleteUser({ accessToken }: Interfaces.IDeleteUser.Input): Promise<void> {
+    const action = this.buildActionInstance(Actions.DeleteUser);
+    await action.execute<Interfaces.IDeleteUser.Input, undefined>({ accessToken });
   }
 
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {

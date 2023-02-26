@@ -828,7 +828,7 @@ describe('awsCognitoIdentityProvider', () => {
     });
   });
 
-  describe('confirmForgotPassword', () => {
+  describe('toggleMFA', () => {
     const accessToken = 'any_access_token';
     const enabled = true;
     const preferred = false;
@@ -869,6 +869,48 @@ describe('awsCognitoIdentityProvider', () => {
       toggleMFAExecuteSpy.mockRejectedValueOnce(error);
 
       const promise = sut.toggleMFA({ accessToken, enabled, preferred });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
+
+  describe('toggleMFA', () => {
+    const accessToken = 'any_access_token';
+
+    const deleteUserParamsObject = {
+      accessToken,
+    };
+
+    let deleteUserExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      deleteUserExecuteSpy = jest.fn().mockResolvedValue(undefined);
+      jest.mocked(Actions.DeleteUser).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: deleteUserExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "DeleteUser" action with correct params', async () => {
+        await sut.deleteUser({ accessToken });
+
+        expect(Actions.DeleteUser).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider) });
+        expect(Actions.DeleteUser).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.deleteUser({ accessToken });
+
+      expect(deleteUserExecuteSpy).toHaveBeenCalledWith(deleteUserParamsObject);
+      expect(deleteUserExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_deleteUser_error');
+      deleteUserExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.deleteUser({ accessToken });
 
       await expect(promise).rejects.toThrow(error);
     });
