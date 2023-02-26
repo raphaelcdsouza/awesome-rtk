@@ -772,8 +772,8 @@ describe('awsCognitoIdentityProvider', () => {
     });
   });
 
-  describe('forgotPassword', () => {
-    const username = 'any_access_token';
+  describe('confirmForgotPassword', () => {
+    const username = 'any_username';
     const newPassword = 'any_new_password';
     const code = 'any_code';
 
@@ -823,6 +823,52 @@ describe('awsCognitoIdentityProvider', () => {
       confirmForgotPasswordExecuteSpy.mockRejectedValueOnce(error);
 
       const promise = sut.confirmForgotPassword({ username, newPassword, code });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
+
+  describe('confirmForgotPassword', () => {
+    const accessToken = 'any_access_token';
+    const enabled = true;
+    const preferred = false;
+
+    const toggleMFAParamsObject = {
+      accessToken,
+      enabled,
+      preferred,
+    };
+
+    let toggleMFAExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      toggleMFAExecuteSpy = jest.fn().mockResolvedValue(undefined);
+      jest.mocked(Actions.ToggleMFA).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: toggleMFAExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "ToggleMFA" action with correct params', async () => {
+        await sut.toggleMFA({ accessToken, enabled, preferred });
+
+        expect(Actions.ToggleMFA).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider) });
+        expect(Actions.ToggleMFA).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.toggleMFA({ accessToken, enabled, preferred });
+
+      expect(toggleMFAExecuteSpy).toHaveBeenCalledWith(toggleMFAParamsObject);
+      expect(toggleMFAExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_toggleMFA_error');
+      toggleMFAExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.toggleMFA({ accessToken, enabled, preferred });
 
       await expect(promise).rejects.toThrow(error);
     });

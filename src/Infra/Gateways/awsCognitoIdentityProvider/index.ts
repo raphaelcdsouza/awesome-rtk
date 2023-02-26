@@ -30,7 +30,8 @@ implements
   Interfaces.IVerifyUserAttribute,
   Interfaces.IChangePassword,
   Interfaces.IForgotPassword,
-  Interfaces.IConfirmForgotPassword {
+  Interfaces.IConfirmForgotPassword,
+  Interfaces.IToggleMFA {
   private readonly cognitoInstance: CognitoIdentityServiceProvider;
 
   private readonly clientId: string;
@@ -106,6 +107,11 @@ implements
   async confirmForgotPassword({ username, newPassword, code }: Interfaces.IConfirmForgotPassword.Input): Promise<void> {
     const action = this.buildActionInstance(Actions.ConfirmForgotPassword);
     await action.execute<Omit<Interfaces.IConfirmForgotPassword.Input, 'username'>, undefined>({ newPassword, code }, username);
+  }
+
+  async toggleMFA({ accessToken, enabled, preferred }: Interfaces.IToggleMFA.Input): Promise<void> {
+    const action = this.buildActionInstance(Actions.ToggleMFA);
+    await action.execute<Interfaces.IToggleMFA.Input, undefined>({ accessToken, enabled, preferred });
   }
 
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {
