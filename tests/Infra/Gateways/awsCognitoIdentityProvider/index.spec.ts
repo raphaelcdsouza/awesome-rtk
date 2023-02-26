@@ -704,4 +704,71 @@ describe('awsCognitoIdentityProvider', () => {
       await expect(promise).rejects.toThrow(error);
     });
   });
+
+  describe('forgotPassword', () => {
+    const username = 'any_access_token';
+
+    const forgotPasswordParamsObject = {};
+
+    const deliveryMethod = 'any_delivery_method';
+    const destination = 'any_destination';
+    const attribute = 'any_attribute';
+
+    const forgotPasswordReturnObject = {
+      deliveryMethod,
+      destination,
+      attribute,
+    };
+
+    let forgotPasswordExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      forgotPasswordExecuteSpy = jest.fn().mockResolvedValue(forgotPasswordReturnObject);
+      jest.mocked(Actions.ForgotPassword).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: forgotPasswordExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "ForgotPassword" action with correct params - without "clientSecret"', async () => {
+        await sut.forgotPassword({ username });
+
+        expect(Actions.ForgotPassword).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider) });
+        expect(Actions.ForgotPassword).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "ForgotPassword" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.forgotPassword({ username });
+
+        expect(Actions.ForgotPassword).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.ForgotPassword).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.forgotPassword({ username });
+
+      expect(forgotPasswordExecuteSpy).toHaveBeenCalledWith(forgotPasswordParamsObject, username);
+      expect(forgotPasswordExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return correct data', async () => {
+      const response = await sut.forgotPassword({ username });
+
+      expect(response).toEqual(forgotPasswordReturnObject);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_forgotPassword_error');
+      forgotPasswordExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.forgotPassword({ username });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
 });
