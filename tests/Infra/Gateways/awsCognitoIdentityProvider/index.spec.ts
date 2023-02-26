@@ -771,4 +771,60 @@ describe('awsCognitoIdentityProvider', () => {
       await expect(promise).rejects.toThrow(error);
     });
   });
+
+  describe('forgotPassword', () => {
+    const username = 'any_access_token';
+    const newPassword = 'any_new_password';
+    const code = 'any_code';
+
+    const confirmForgotPasswordParamsObject = {
+      newPassword,
+      code,
+    };
+
+    let confirmForgotPasswordExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      confirmForgotPasswordExecuteSpy = jest.fn().mockResolvedValue(undefined);
+      jest.mocked(Actions.ConfirmForgotPassword).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: confirmForgotPasswordExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "ConfirmForgotPassword" action with correct params - without "clientSecret"', async () => {
+        await sut.confirmForgotPassword({ username, newPassword, code });
+
+        expect(Actions.ConfirmForgotPassword).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider) });
+        expect(Actions.ConfirmForgotPassword).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "ForgotPassword" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.confirmForgotPassword({ username, newPassword, code });
+
+        expect(Actions.ConfirmForgotPassword).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.ConfirmForgotPassword).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.confirmForgotPassword({ username, newPassword, code });
+
+      expect(confirmForgotPasswordExecuteSpy).toHaveBeenCalledWith(confirmForgotPasswordParamsObject, username);
+      expect(confirmForgotPasswordExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_confirmForgotPassword_error');
+      confirmForgotPasswordExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.confirmForgotPassword({ username, newPassword, code });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
 });
