@@ -214,3 +214,14 @@ export namespace IDeleteUser {
     accessToken: string
   }
 }
+
+export interface IGetUserAttributes {
+  getUserAttributes: (params: IGetUserAttributes.Input) => Promise<IGetUserAttributes.Output>
+}
+
+export namespace IGetUserAttributes {
+  export type Input = {
+    accessToken: string
+  }
+  export type Output = AttributesType[]
+}

@@ -874,7 +874,7 @@ describe('awsCognitoIdentityProvider', () => {
     });
   });
 
-  describe('toggleMFA', () => {
+  describe('deleteUser', () => {
     const accessToken = 'any_access_token';
 
     const deleteUserParamsObject = {
@@ -911,6 +911,60 @@ describe('awsCognitoIdentityProvider', () => {
       deleteUserExecuteSpy.mockRejectedValueOnce(error);
 
       const promise = sut.deleteUser({ accessToken });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
+
+  describe('getUserAttributes', () => {
+    const accessToken = 'any_access_token';
+
+    const getUserAttributesParamsObject = {
+      accessToken,
+    };
+    const getUserReturnObject = [
+      {
+        Name: 'any_attribute',
+        Value: 'any_value',
+      },
+    ];
+
+    let getUserAttributesExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      getUserAttributesExecuteSpy = jest.fn().mockResolvedValue(getUserReturnObject);
+      jest.mocked(Actions.GetUserAttributes).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: getUserAttributesExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "GetUserAttributes" action with correct params', async () => {
+        await sut.getUserAttributes({ accessToken });
+
+        expect(Actions.GetUserAttributes).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider) });
+        expect(Actions.GetUserAttributes).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.getUserAttributes({ accessToken });
+
+      expect(getUserAttributesExecuteSpy).toHaveBeenCalledWith(getUserAttributesParamsObject);
+      expect(getUserAttributesExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return correct data', async () => {
+      const response = await sut.getUserAttributes({ accessToken });
+
+      expect(response).toEqual(getUserReturnObject);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_getUserAttributes_error');
+      getUserAttributesExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.getUserAttributes({ accessToken });
 
       await expect(promise).rejects.toThrow(error);
     });

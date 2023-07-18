@@ -120,6 +120,11 @@ implements
     await action.execute<Interfaces.IDeleteUser.Input, undefined>({ accessToken });
   }
 
+  async getUserAttributes({ accessToken }: Interfaces.IGetUserAttributes.Input): Promise<void> {
+    const action = this.buildActionInstance(Actions.GetUserAttributes);
+    return action.execute<Interfaces.IGetUserAttributes.Input, undefined>({ accessToken });
+  }
+
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {
     return new Action({ clientId: this.clientId, cognitoInstance: this.cognitoInstance, clientSecret: this.clientSecret });
   }
