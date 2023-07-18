@@ -2,6 +2,7 @@ module.exports = {
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/**/index.ts',
+    '<rootDir>/src/Infra/Gateways/awsCognitoIdentityProvider/index.ts',
   ],
   coverageDirectory: 'coverage',
   coverageProvider: 'babel',

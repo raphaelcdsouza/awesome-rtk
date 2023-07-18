@@ -16,15 +16,26 @@ export const HTTP_ERROR_CODES = {
 };
 
 export const AWS_ERROR_CODES = {
+  CREDENTIALS: 'CredentialsError',
   S3: {
     NOT_FOUND: 'NoSuchKey',
     UNEXISTENT_BUCKET: 'NoSuchBucket',
     INVALID_ACCESS_KEY: 'InvalidAccessKeyId',
     INVALID_SECRET_KEY: 'SignatureDoesNotMatch',
   },
+  COGNITO: {
+    NOT_AUTHORIZED: 'NotAuthorizedException',
+    RESOURCE_NOT_FOUND: 'ResourceNotFoundException',
+    USERNAME_EXISTS: 'UsernameExistsException',
+    INVALID_PARAMETER: 'InvalidParameterException',
+    INVALID_PASSWORD: 'InvalidPasswordException',
+    EXPIRED_CODE: 'ExpiredCodeException',
+  },
 };
 
 export const ERRORS = {
+  UNKNOWN: 'E00000',
+  CREDENTIALS: 'E00001',
   HTTP: {
     UNKNOWN: 'E01000',
     NOT_FOUND: 'E01001',
@@ -38,13 +49,20 @@ export const ERRORS = {
     TABLE_NOT_FOUND: 'E02001',
     COLUMN_NOT_FOUND: 'E02002',
   },
-  AWS: {
+  FILE_STORAGE: {
     UNKNOWN: 'E03000',
-    S3: {
-      NOT_FOUND: 'E03001',
-      UNEXISTENT_BUCKET: 'E03002',
-      INVALID_ACCESS_KEY: 'E03003',
-      INVALID_SECRET_KEY: 'E03004',
-    },
+    NOT_FOUND: 'E03001',
+    UNEXISTENT_BUCKET: 'E03002',
+    INVALID_ACCESS_KEY: 'E03003',
+    INVALID_SECRET_KEY: 'E03004',
+  },
+  IDENTITY_PROVIDER: {
+    UNKNOWN: 'E03100',
+    NOT_AUTHORIZED: 'E03101',
+    RESOURCE_NOT_FOUND: 'E03102',
+    USERNAME_EXISTS: 'E03103',
+    INVALID_PARAMETER: 'E03104',
+    INVALID_PASSWORD: 'E03105',
+    EXPIRED_CODE: 'E03106',
   },
 };

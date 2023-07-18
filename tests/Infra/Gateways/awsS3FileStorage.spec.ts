@@ -1,12 +1,16 @@
-import { config, S3 } from 'aws-sdk';
+import { S3 } from 'aws-sdk';
 import { Readable } from 'stream';
 
 import { AwsS3FileStorage } from '../../../src/Infra/Gateways';
 import { FileStorageError } from '../../../src/Errors';
+import { awsErrorMapper } from '../../../src/Utils/Gateways/Error';
 
 jest.mock('aws-sdk');
 jest.mock('../../../src/Errors/FileStorageError', () => ({
   FileStorageError: jest.fn(),
+}));
+jest.mock('../../../src/Utils/Gateways/Error/mapper', () => ({
+  awsErrorMapper: jest.fn().mockReturnValue('any_mapped_error'),
 }));
 
 describe('AwsS3FileStorage', () => {
@@ -53,8 +57,8 @@ describe('AwsS3FileStorage', () => {
 
   it('should call "config" method with correct params', () => {
     expect(sut).toBeDefined();
-    expect(config.update).toHaveBeenCalledTimes(1);
-    expect(config.update).toHaveBeenCalledWith({
+    expect(S3).toHaveBeenCalledTimes(1);
+    expect(S3).toHaveBeenCalledWith({
       credentials: {
         accessKeyId: awsAccessKey,
         secretAccessKey: awsSecret,
@@ -102,6 +106,8 @@ describe('AwsS3FileStorage', () => {
         await expect(promise).rejects.toBeInstanceOf(FileStorageError);
         expect(FileStorageError).toHaveBeenCalledTimes(1);
         expect(FileStorageError).toHaveBeenCalledWith(errorMessage, expect.any(String), 'aws', errorCode);
+        expect(awsErrorMapper).toHaveBeenCalledTimes(1);
+        expect(awsErrorMapper).toHaveBeenCalledWith(errorCode, 's3');
       });
     });
 
@@ -135,6 +141,8 @@ describe('AwsS3FileStorage', () => {
         await expect(promise).rejects.toBeInstanceOf(FileStorageError);
         expect(FileStorageError).toHaveBeenCalledTimes(1);
         expect(FileStorageError).toHaveBeenCalledWith(errorMessage, expect.any(String), 'aws', errorCode);
+        expect(awsErrorMapper).toHaveBeenCalledTimes(1);
+        expect(awsErrorMapper).toHaveBeenCalledWith(errorCode, 's3');
       });
     });
   });
@@ -205,6 +213,8 @@ describe('AwsS3FileStorage', () => {
       await expect(promise).rejects.toBeInstanceOf(FileStorageError);
       expect(FileStorageError).toHaveBeenCalledTimes(1);
       expect(FileStorageError).toHaveBeenCalledWith(errorMessage, expect.any(String), 'aws', errorCode);
+      expect(awsErrorMapper).toHaveBeenCalledTimes(1);
+      expect(awsErrorMapper).toHaveBeenCalledWith(errorCode, 's3');
     });
   });
 });

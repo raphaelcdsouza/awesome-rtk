@@ -1,4 +1,4 @@
-import { FileStorageError, InfraError } from '../../src/Errors';
+import { IdentityProviderError, InfraError } from '../../src/Errors';
 import { ERRORS } from '../../src/Utils/Enums';
 
 describe('BaseError', () => {
@@ -8,10 +8,10 @@ describe('BaseError', () => {
   const providerErrorCode = 'any_database_error_code';
   const unknownErrorMessage = 'Unknown error';
 
-  let sut: FileStorageError;
+  let sut: IdentityProviderError;
 
   beforeEach(() => {
-    sut = new FileStorageError(errorMessage, errorCode, provider, providerErrorCode);
+    sut = new IdentityProviderError(errorMessage, errorCode, provider, providerErrorCode);
   });
 
   it('should extends "InfraError" class', () => {
@@ -23,8 +23,8 @@ describe('BaseError', () => {
     expect(sut).toHaveProperty('providerErrorCode', providerErrorCode);
   });
 
-  it('should have "message" property as "Unknown error" if "code" argument is passed with value "E03000"', () => {
-    const unknownError = new FileStorageError(errorMessage, ERRORS.FILE_STORAGE.UNKNOWN, provider, providerErrorCode);
+  it('should have "message" property as "Unknown error" if "code" argument is passed with value "E03100"', () => {
+    const unknownError = new IdentityProviderError(errorMessage, ERRORS.IDENTITY_PROVIDER.UNKNOWN, provider, providerErrorCode);
 
     expect(unknownError).toHaveProperty('message', unknownErrorMessage);
   });
