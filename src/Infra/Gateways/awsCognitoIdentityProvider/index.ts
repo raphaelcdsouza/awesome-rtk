@@ -63,6 +63,11 @@ implements
     await action.execute<Omit<Interfaces.IConfirmSignUp.Input, 'username'>, undefined>({ code }, username);
   }
 
+  async resendSignUpConfirmationCode({ username }: Interfaces.IResendSignUpConfirmationCode.Input): Promise<Interfaces.IResendSignUpConfirmationCode.Output> {
+    const action = this.buildActionInstance(Actions.ResendSignUpConfirmationCode);
+    return action.execute<Omit<Interfaces.IResendSignUpConfirmationCode.Input, 'username'>, Interfaces.IResendSignUpConfirmationCode.Output>({}, username);
+  }
+
   async login({ username, password }: Interfaces.ILogin.Input): Promise<Interfaces.ILogin.Output> {
     const action = this.buildActionInstance(Actions.Login);
     return action.execute<Omit<Interfaces.ILogin.Input, 'username'>, Interfaces.ILogin.Output>({ password }, username);

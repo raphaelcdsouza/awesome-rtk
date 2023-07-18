@@ -163,6 +163,71 @@ describe('awsCognitoIdentityProvider', () => {
     });
   });
 
+  describe('resendSignUpConfirmationCode', () => {
+    const username = 'any_username';
+
+    const resendSignUpConfirmationCodeParamsObject = {};
+
+    const deliveryMethod = 'any_delivery_method';
+    const destination = 'any_destination';
+
+    const resendSignUpConfirmationCodeReturnObject = {
+      deliveryMethod,
+      destination,
+    };
+
+    let resendSignUpConfirmationCodeExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      resendSignUpConfirmationCodeExecuteSpy = jest.fn().mockResolvedValue(resendSignUpConfirmationCodeReturnObject);
+      jest.mocked(Actions.ResendSignUpConfirmationCode).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: resendSignUpConfirmationCodeExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "ResendSignUpConfirmationCode" action with correct params - without "clientSecret"', async () => {
+        await sut.resendSignUpConfirmationCode({ username });
+
+        expect(Actions.ResendSignUpConfirmationCode).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider) });
+        expect(Actions.ResendSignUpConfirmationCode).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "ResendSignUpConfirmationCode" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.resendSignUpConfirmationCode({ username });
+
+        expect(Actions.ResendSignUpConfirmationCode).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.ResendSignUpConfirmationCode).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.resendSignUpConfirmationCode({ username });
+
+      expect(resendSignUpConfirmationCodeExecuteSpy).toHaveBeenCalledWith(resendSignUpConfirmationCodeParamsObject, username);
+      expect(resendSignUpConfirmationCodeExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return correct data', async () => {
+      const response = await sut.resendSignUpConfirmationCode({ username });
+
+      expect(response).toEqual(resendSignUpConfirmationCodeReturnObject);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_forgotPassword_error');
+      resendSignUpConfirmationCodeExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.resendSignUpConfirmationCode({ username });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
+
   describe('login', () => {
     const username = 'any_username';
     const password = 'any_password';
