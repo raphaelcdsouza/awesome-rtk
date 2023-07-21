@@ -32,7 +32,8 @@ implements
   Interfaces.IForgotPassword,
   Interfaces.IConfirmForgotPassword,
   Interfaces.IToggleMFA,
-  Interfaces.IDeleteUser {
+  Interfaces.IDeleteUser,
+  Interfaces.IGetUserAttributes {
   private readonly cognitoInstance: CognitoIdentityServiceProvider;
 
   private readonly clientId: string;
@@ -125,9 +126,9 @@ implements
     await action.execute<Interfaces.IDeleteUser.Input, undefined>({ accessToken });
   }
 
-  async getUserAttributes({ accessToken }: Interfaces.IGetUserAttributes.Input): Promise<void> {
+  async getUserAttributes({ accessToken }: Interfaces.IGetUserAttributes.Input): Promise<Interfaces.IGetUserAttributes.Output> {
     const action = this.buildActionInstance(Actions.GetUserAttributes);
-    return action.execute<Interfaces.IGetUserAttributes.Input, undefined>({ accessToken });
+    return action.execute<Interfaces.IGetUserAttributes.Input, Interfaces.IGetUserAttributes.Output>({ accessToken });
   }
 
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {
