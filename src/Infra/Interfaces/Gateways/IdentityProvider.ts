@@ -225,3 +225,21 @@ export namespace IGetUserAttributes {
   }
   export type Output = AttributesType[]
 }
+
+export interface IRefreshToken {
+  login: (params: IRefreshToken.Input) => Promise<IRefreshToken.Output>
+}
+
+export namespace IRefreshToken {
+  export type Input = {
+    sub: string
+    refreshToken: string
+  }
+
+  export type Output = {
+    tokenType?: string
+    accessToken?: string
+    refreshToken?: string
+    idToken?: string
+  }
+}

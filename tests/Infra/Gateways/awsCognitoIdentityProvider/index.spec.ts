@@ -1034,4 +1034,76 @@ describe('awsCognitoIdentityProvider', () => {
       await expect(promise).rejects.toThrow(error);
     });
   });
+
+  describe('refreshToken', () => {
+    const refreshTokenInput = 'any_refresh_token_input';
+    const sub = 'any_sub';
+
+    const refreshTokenParamsObject = {
+      refreshToken: refreshTokenInput,
+    };
+
+    const tokenType = 'any_token_type';
+    const accessToken = 'any_access_token';
+    const refreshToken = 'any_refresh_token';
+    const idToken = 'any_id_token';
+
+    const refreshTokenReturnObjectWithAuthenticationData = {
+      tokenType,
+      accessToken,
+      refreshToken,
+      idToken,
+    };
+
+    let refreshTokenExecuteSpy: jest.Mock;
+
+    beforeAll(() => {
+      refreshTokenExecuteSpy = jest.fn().mockResolvedValue(refreshTokenReturnObjectWithAuthenticationData);
+      jest.mocked(Actions.RefreshToken).mockImplementation(jest.fn().mockImplementation(() => ({
+        execute: refreshTokenExecuteSpy,
+      })));
+    });
+
+    describe('constructor', () => {
+      it('should instantiate "RefreshToken" action with correct params - without "clientSecret"', async () => {
+        await sut.refreshToken({ refreshToken: refreshTokenInput, sub });
+
+        expect(Actions.RefreshToken).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret: undefined });
+        expect(Actions.RefreshToken).toHaveBeenCalledTimes(1);
+      });
+
+      it('should instantiate "RefreshToken" action with correct params - with "clientSecret"', async () => {
+        const optionalSut = new AwsCognitoIdentityProvider({
+          region, accessKeyId, secretAccessKey, clientId, clientSecret,
+        });
+
+        await optionalSut.refreshToken({ refreshToken: refreshTokenInput, sub });
+
+        expect(Actions.RefreshToken).toHaveBeenCalledWith({ clientId, cognitoInstance: expect.any(CognitoIdentityServiceProvider), clientSecret });
+        expect(Actions.RefreshToken).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should call "execute" method with correct params', async () => {
+      await sut.refreshToken({ refreshToken: refreshTokenInput, sub });
+
+      expect(refreshTokenExecuteSpy).toHaveBeenCalledWith(refreshTokenParamsObject, sub);
+      expect(refreshTokenExecuteSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return authentication data if "execute" returns "authenticationData"', async () => {
+      const result = await sut.refreshToken({ refreshToken: refreshTokenInput, sub });
+
+      expect(result).toEqual(refreshTokenReturnObjectWithAuthenticationData);
+    });
+
+    it('should rethrow error if "execute" throws', async () => {
+      const error = new Error('any_login_error');
+      refreshTokenExecuteSpy.mockRejectedValueOnce(error);
+
+      const promise = sut.refreshToken({ refreshToken: refreshTokenInput, sub });
+
+      await expect(promise).rejects.toThrow(error);
+    });
+  });
 });
