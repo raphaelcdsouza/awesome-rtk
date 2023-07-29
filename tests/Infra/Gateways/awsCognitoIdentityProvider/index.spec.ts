@@ -33,6 +33,17 @@ describe('awsCognitoIdentityProvider', () => {
     expect(CognitoIdentityServiceProvider).toHaveBeenCalledTimes(1);
   });
 
+  it('should call "CognitoIdentityServiceProvider" with correct params - without credentials object', () => {
+    const alternativeSut = new AwsCognitoIdentityProvider({
+      region, clientId,
+    });
+
+    expect(alternativeSut).toBeDefined();
+    expect(CognitoIdentityServiceProvider).toHaveBeenCalledWith({
+      region,
+    });
+  });
+
   describe('signUp', () => {
     const username = 'any_username';
     const password = 'any_password';
