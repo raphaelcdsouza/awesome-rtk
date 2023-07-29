@@ -13,3 +13,4 @@ export * from './forgotPassword';
 export * from './confirmForgotPassword';
 export * from './deleteUser';
 export * from './getUserAttributes';
+export * from './refreshToken';
