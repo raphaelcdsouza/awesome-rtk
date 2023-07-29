@@ -6,8 +6,8 @@ import * as Actions from './actions';
 
 type AwsCognitoIdentityProviderConstructorParams = {
   region: string;
-  accessKeyId: string;
-  secretAccessKey: string;
+  accessKeyId?: string;
+  secretAccessKey?: string;
   clientId: string;
   clientSecret?: string;
 }
@@ -43,12 +43,18 @@ implements
   constructor({
     region, accessKeyId, secretAccessKey, clientId, clientSecret,
   }: AwsCognitoIdentityProviderConstructorParams) {
-    this.cognitoInstance = new CognitoIdentityServiceProvider({
-      region,
-      credentials: {
+    let credentials: CognitoIdentityServiceProvider.ClientConfiguration['credentials'];
+
+    if (accessKeyId !== undefined && secretAccessKey !== undefined) {
+      credentials = {
         accessKeyId,
         secretAccessKey,
-      },
+      };
+    }
+
+    this.cognitoInstance = new CognitoIdentityServiceProvider({
+      region,
+      credentials,
     });
     this.clientId = clientId;
     this.clientSecret = clientSecret;
