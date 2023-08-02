@@ -24,7 +24,6 @@ export class RefreshToken extends AwsCognitoTemplate {
     return {
       tokenType: result.AuthenticationResult!.TokenType!,
       accessToken: result.AuthenticationResult!.AccessToken!,
-      refreshToken: result.AuthenticationResult!.RefreshToken!,
       idToken: result.AuthenticationResult!.IdToken!,
     };
   }
