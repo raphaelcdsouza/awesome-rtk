@@ -137,9 +137,9 @@ implements
     return action.execute<Interfaces.IGetUserAttributes.Input, Interfaces.IGetUserAttributes.Output>({ accessToken });
   }
 
-  async refreshToken({ refreshToken, sub }: Interfaces.IRefreshToken.Input): Promise<void> {
+  async refreshToken({ refreshToken, sub }: Interfaces.IRefreshToken.Input): Promise<Interfaces.IRefreshToken.Output> {
     const action = this.buildActionInstance(Actions.RefreshToken);
-    return action.execute<Omit<Interfaces.IRefreshToken.Input, 'sub'>, undefined>({ refreshToken }, sub);
+    return action.execute<Omit<Interfaces.IRefreshToken.Input, 'sub'>, Interfaces.IRefreshToken.Output>({ refreshToken }, sub);
   }
 
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {

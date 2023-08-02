@@ -227,7 +227,7 @@ export namespace IGetUserAttributes {
 }
 
 export interface IRefreshToken {
-  login: (params: IRefreshToken.Input) => Promise<IRefreshToken.Output>
+  refreshToken: (params: IRefreshToken.Input) => Promise<IRefreshToken.Output>
 }
 
 export namespace IRefreshToken {
