@@ -1056,13 +1056,11 @@ describe('awsCognitoIdentityProvider', () => {
 
     const tokenType = 'any_token_type';
     const accessToken = 'any_access_token';
-    const refreshToken = 'any_refresh_token';
     const idToken = 'any_id_token';
 
     const refreshTokenReturnObjectWithAuthenticationData = {
       tokenType,
       accessToken,
-      refreshToken,
       idToken,
     };
 

@@ -239,7 +239,6 @@ export namespace IRefreshToken {
   export type Output = {
     tokenType?: string
     accessToken?: string
-    refreshToken?: string
     idToken?: string
   }
 }

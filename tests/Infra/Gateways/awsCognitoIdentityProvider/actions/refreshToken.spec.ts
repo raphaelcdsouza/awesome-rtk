@@ -27,14 +27,12 @@ describe('login', () => {
 
   const tokenType = 'any_token_type';
   const accessToken = 'any_access_token';
-  const refreshToken = 'any_refresh_token';
   const idToken = 'any_id_token';
 
   beforeAll(() => {
     initiateAuthPromiseSpy = jest.fn().mockResolvedValue({
       AuthenticationResult: {
         AccessToken: accessToken,
-        RefreshToken: refreshToken,
         IdToken: idToken,
         ExpiresIn: 3600,
         TokenType: tokenType,
@@ -83,7 +81,6 @@ describe('login', () => {
     expect(result).toEqual({
       tokenType,
       accessToken,
-      refreshToken,
       idToken,
     });
   });
