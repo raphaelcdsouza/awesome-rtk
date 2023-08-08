@@ -21,5 +21,6 @@ export namespace IUploadFile {
     key: string
     file: string | Buffer | Readable
     bucketName: string
+    mimeType?: string
   }
 }

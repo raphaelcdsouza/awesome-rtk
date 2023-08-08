@@ -150,6 +150,7 @@ describe('AwsS3FileStorage', () => {
   describe('upload', () => {
     const bufferFile = Buffer.from('any_buffer_file');
     const stringFile = 'any_string_file';
+    const mimeType = 'any_mime_type';
     const readableFile = new Readable();
 
     it('should call "upload" method with correct params and body of the file as string', async () => {
@@ -182,6 +183,22 @@ describe('AwsS3FileStorage', () => {
         Bucket: bucketName,
         Key: key,
         Body: readableFile,
+      });
+    });
+
+    it('should call "upload" method with correct params - mimeType', async () => {
+      await sut.uploadFile({
+        key, bucketName, file: stringFile, mimeType,
+      });
+
+      expect(uploadSpy).toHaveBeenCalledTimes(1);
+      expect(uploadSpy).toHaveBeenCalledWith({
+        Bucket: bucketName,
+        Key: key,
+        Body: stringFile,
+        Metadata: {
+          'Content-Type': mimeType,
+        },
       });
     });
 

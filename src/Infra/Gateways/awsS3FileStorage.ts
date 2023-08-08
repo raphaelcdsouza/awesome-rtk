@@ -33,13 +33,23 @@ export class AwsS3FileStorage implements IRetrieveFile, IUploadFile {
     }
   }
 
-  async uploadFile({ bucketName, file, key }: IUploadFile.Input): Promise<string> {
+  async uploadFile({
+    bucketName, file, key, mimeType,
+  }: IUploadFile.Input): Promise<string> {
     try {
-      const { Location } = await this.s3Instance.upload({
+      const S3Params: S3.PutObjectRequest = {
         Bucket: bucketName,
         Key: key,
         Body: file,
-      }).promise();
+      };
+
+      if (mimeType !== undefined) {
+        S3Params.Metadata = {
+          'Content-Type': mimeType,
+        };
+      }
+
+      const { Location } = await this.s3Instance.upload(S3Params).promise();
 
       return Location;
     } catch (err: any) {
