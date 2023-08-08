@@ -196,9 +196,7 @@ describe('AwsS3FileStorage', () => {
         Bucket: bucketName,
         Key: key,
         Body: stringFile,
-        Metadata: {
-          'Content-Type': mimeType,
-        },
+        ContentType: mimeType,
       });
     });
 

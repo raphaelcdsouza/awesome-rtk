@@ -44,9 +44,7 @@ export class AwsS3FileStorage implements IRetrieveFile, IUploadFile {
       };
 
       if (mimeType !== undefined) {
-        S3Params.Metadata = {
-          'Content-Type': mimeType,
-        };
+        S3Params.ContentType = mimeType;
       }
 
       const { Location } = await this.s3Instance.upload(S3Params).promise();
