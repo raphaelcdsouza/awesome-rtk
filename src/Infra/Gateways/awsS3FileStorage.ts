@@ -5,15 +5,32 @@ import { awsErrorMapper } from '../../Utils/Gateways/Error';
 
 import { IRetrieveFile, IUploadFile } from '../Interfaces/Gateways';
 
+type AwsS3FileStorageConstructorParams = {
+  region?: string;
+  accessKeyId?: string;
+  secretAccessKey?: string;
+}
+
 export class AwsS3FileStorage implements IRetrieveFile, IUploadFile {
+  private readonly region?: string;
+
   private readonly s3Instance: S3;
 
-  constructor(accessKey: string, secret: string) {
+  constructor({ region, accessKeyId, secretAccessKey }: AwsS3FileStorageConstructorParams) {
+    let credentials: S3.ClientConfiguration['credentials'];
+
+    if (accessKeyId !== undefined && secretAccessKey !== undefined) {
+      credentials = {
+        accessKeyId,
+        secretAccessKey,
+      };
+    }
+
+    this.region = region;
+
     this.s3Instance = new S3({
-      credentials: {
-        accessKeyId: accessKey,
-        secretAccessKey: secret,
-      },
+      credentials,
+      region,
     });
   }
 
