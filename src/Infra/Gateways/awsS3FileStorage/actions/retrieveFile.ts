@@ -1,11 +1,11 @@
-import { IRetrieveFile } from "../../../Interfaces/Gateways";
-import { AwsS3Template } from "../../Templates/AWS";
-import { AwsS3TemplateConstructorParams } from "./types";
+import { IRetrieveFile } from '../../../Interfaces/Gateways';
+import { AwsS3Template } from '../../Templates/AWS';
+import { AwsS3TemplateConstructorParams } from './types';
 
 type ExecuteInput = IRetrieveFile.Input;
 
 export class RetrieveFile extends AwsS3Template {
-  constructor ({ s3Instance }: AwsS3TemplateConstructorParams) {
+  constructor({ s3Instance }: AwsS3TemplateConstructorParams) {
     super({ s3Instance });
   }
 

@@ -15,4 +15,4 @@ export * from './deleteUser';
 export * from './getUserAttributes';
 export * from './refreshToken';
 export * from './adminCreateUser';
-export * from  './adminDeleteUser';
+export * from './adminDeleteUser';
