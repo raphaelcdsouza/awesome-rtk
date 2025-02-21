@@ -1,11 +1,9 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provider';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { SignUp } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvider/actions';
 import { AwsCognitoTemplate } from '../../../../../src/Infra/Gateways/Templates/AWS';
 import { ISignUp } from '../../../../../src/Infra/Interfaces/Gateways';
-
-jest.mock('aws-sdk');
 
 jest.mock('../../../../../src/Utils/hash', () => ({
   awsCognitoSecretHash: jest.fn().mockReturnValue('any_secret_hash'),
@@ -15,8 +13,7 @@ type ExecuteInput = Omit<ISignUp.Input, 'username'>;
 type ExecuteOutput = ISignUp.Output;
 
 describe('signUp', () => {
-  let signUpPromiseSpy: jest.Mock;
-  let cognitoInterfaceMock: MockProxy<CognitoIdentityServiceProvider>;
+  let cognitoInterfaceMock: MockProxy<CognitoIdentityProvider>;
   let sut: SignUp;
 
   const clientId = 'any_client_id';
@@ -29,7 +26,8 @@ describe('signUp', () => {
   const sub = 'any_sub';
 
   beforeAll(() => {
-    signUpPromiseSpy = jest.fn().mockResolvedValue({
+    cognitoInterfaceMock = mock();
+    cognitoInterfaceMock.signUp.mockImplementation(jest.fn().mockResolvedValue({
       UserConfirmed: false,
       CodeDeliveryDetails: {
         Destination: destination,
@@ -37,11 +35,7 @@ describe('signUp', () => {
         AttributeName: 'email',
       },
       UserSub: sub,
-    });
-    cognitoInterfaceMock = mock();
-    cognitoInterfaceMock.signUp.mockImplementation(jest.fn().mockImplementation(() => ({
-      promise: signUpPromiseSpy,
-    })));
+    }));
   });
 
   beforeEach(() => {
@@ -63,13 +57,6 @@ describe('signUp', () => {
 
     expect(cognitoInterfaceMock.signUp).toHaveBeenCalledWith(signUpObject);
     expect(cognitoInterfaceMock.signUp).toHaveBeenCalledTimes(1);
-  });
-
-  it('should call "promise" with correct params', async () => {
-    await sut.execute<ExecuteInput>({ password }, username);
-
-    expect(signUpPromiseSpy).toHaveBeenCalledWith();
-    expect(signUpPromiseSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should return cognito user id', async () => {

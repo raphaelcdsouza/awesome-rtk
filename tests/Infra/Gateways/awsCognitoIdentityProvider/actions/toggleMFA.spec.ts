@@ -1,17 +1,16 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provider';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { ToggleMFA } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvider/actions';
 import { AwsCognitoTemplate } from '../../../../../src/Infra/Gateways/Templates/AWS';
 import { IToggleMFA } from '../../../../../src';
 
-jest.mock('aws-sdk');
+jest.mock('@aws-sdk/client-cognito-identity-provider');
 
 type ExecuteInput = IToggleMFA.Input;
 
 describe('associateSoftwareToken', () => {
-  let setUserMFAPreferencePromiseSpy: jest.Mock;
-  let cognitoInterfaceMock: MockProxy<CognitoIdentityServiceProvider>;
+  let cognitoInterfaceMock: MockProxy<CognitoIdentityProvider>;
   let sut: ToggleMFA;
 
   const clientId = 'any_client_id';
@@ -21,11 +20,8 @@ describe('associateSoftwareToken', () => {
   const preferred = true;
 
   beforeAll(() => {
-    setUserMFAPreferencePromiseSpy = jest.fn().mockResolvedValue({});
     cognitoInterfaceMock = mock();
-    cognitoInterfaceMock.setUserMFAPreference.mockImplementation(jest.fn().mockImplementation(() => ({
-      promise: setUserMFAPreferencePromiseSpy,
-    })));
+    cognitoInterfaceMock.setUserMFAPreference.mockImplementation(jest.fn().mockResolvedValue({}));
   });
 
   beforeEach(() => {
@@ -56,13 +52,6 @@ describe('associateSoftwareToken', () => {
 
     expect(cognitoInterfaceMock.setUserMFAPreference).toHaveBeenCalledWith({ ...setUserMFAObject, SoftwareTokenMfaSettings: { Enabled: false, PreferredMfa: false } });
     expect(cognitoInterfaceMock.setUserMFAPreference).toHaveBeenCalledTimes(1);
-  });
-
-  it('should call "promise" with correct params', async () => {
-    await sut.execute<ExecuteInput>({ accessToken, enabled, preferred });
-
-    expect(setUserMFAPreferencePromiseSpy).toHaveBeenCalledWith();
-    expect(setUserMFAPreferencePromiseSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should return undefined', async () => {

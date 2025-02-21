@@ -1,5 +1,5 @@
 type AttributesType = {
-  Name: string,
+  Name: string | undefined,
   Value?: string,
 }
 
@@ -240,5 +240,34 @@ export namespace IRefreshToken {
     tokenType?: string
     accessToken?: string
     idToken?: string
+  }
+}
+
+export interface IAdminCreateUser {
+  adminCreateUser: (params: IAdminCreateUser.Input) => Promise<IAdminCreateUser.Output>
+}
+
+type DesiredDeliveryMediumsType = "SMS"|"EMAIL"|string
+
+export namespace IAdminCreateUser {
+  export type Input = {
+    username: string
+    password: string
+    desiredDeliveryMediums: DesiredDeliveryMediumsType[]
+    attributes?: AttributesType[]
+  }
+
+  export type Output = {
+    id: string
+  }
+}
+
+export interface IAdminDeleteUser {
+  adminDeleteUser: (params: IAdminDeleteUser.Input) => Promise<void>
+}
+
+export namespace IAdminDeleteUser {
+  export type Input = {
+    username: string
   }
 }

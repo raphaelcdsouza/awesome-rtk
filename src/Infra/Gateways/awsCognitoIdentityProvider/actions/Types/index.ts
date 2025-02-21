@@ -1,7 +1,8 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provider';
 
 export type AwsCognitoTemplateConstructorParams = {
-  cognitoInstance: CognitoIdentityServiceProvider;
+  cognitoInstance: CognitoIdentityProvider;
   clientId: string;
   clientSecret?: string;
+  userPoolId?: string;
 }

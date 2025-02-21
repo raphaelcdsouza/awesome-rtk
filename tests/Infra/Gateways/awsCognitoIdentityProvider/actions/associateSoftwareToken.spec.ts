@@ -1,18 +1,15 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provider';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { AssociateSoftwareToken } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvider/actions';
 import { AwsCognitoTemplate } from '../../../../../src/Infra/Gateways/Templates/AWS';
 import { IAssociateSoftwareToken } from '../../../../../src/Infra/Interfaces/Gateways';
 
-jest.mock('aws-sdk');
-
 type ExecuteInput = IAssociateSoftwareToken.Input;
 type ExecuteOutput = IAssociateSoftwareToken.Output;
 
 describe('associateSoftwareToken', () => {
-  let associateSoftwareTokenPromiseSpy: jest.Mock;
-  let cognitoInterfaceMock: MockProxy<CognitoIdentityServiceProvider>;
+  let cognitoInterfaceMock: MockProxy<CognitoIdentityProvider>;
   let sut: AssociateSoftwareToken;
 
   const clientId = 'any_client_id';
@@ -24,14 +21,11 @@ describe('associateSoftwareToken', () => {
   const outputSession = 'any_output_session';
 
   beforeAll(() => {
-    associateSoftwareTokenPromiseSpy = jest.fn().mockResolvedValue({
+    cognitoInterfaceMock = mock();
+    cognitoInterfaceMock.associateSoftwareToken.mockImplementation(jest.fn().mockResolvedValue({
       SecretCode: publicKey,
       Session: outputSession,
-    });
-    cognitoInterfaceMock = mock();
-    cognitoInterfaceMock.associateSoftwareToken.mockImplementation(jest.fn().mockImplementation(() => ({
-      promise: associateSoftwareTokenPromiseSpy,
-    })));
+    }));
   });
 
   beforeEach(() => {
@@ -79,9 +73,9 @@ describe('associateSoftwareToken', () => {
     });
 
     it('should return secret code', async () => {
-      associateSoftwareTokenPromiseSpy.mockResolvedValueOnce({
+      cognitoInterfaceMock.associateSoftwareToken.mockImplementationOnce(jest.fn().mockResolvedValue({
         SecretCode: publicKey,
-      });
+      }));
 
       const result = await sut.execute<ExecuteInput, ExecuteOutput>({ accessToken });
 
@@ -89,12 +83,5 @@ describe('associateSoftwareToken', () => {
         publicKey,
       });
     });
-  });
-
-  it('should call "promise" with correct params', async () => {
-    await sut.execute<ExecuteInput>({ session: inputSession });
-
-    expect(associateSoftwareTokenPromiseSpy).toHaveBeenCalledWith();
-    expect(associateSoftwareTokenPromiseSpy).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,11 +1,9 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provider';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { RespondToAuthChallenge } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvider/actions';
 import { AwsCognitoTemplate } from '../../../../../src/Infra/Gateways/Templates/AWS';
 import { IRespondToAuthChallenge } from '../../../../../src/Infra/Interfaces/Gateways';
-
-jest.mock('aws-sdk');
 
 jest.mock('../../../../../src/Utils/hash', () => ({
   awsCognitoSecretHash: jest.fn().mockReturnValue('any_secret_hash'),
@@ -15,8 +13,7 @@ type ExecuteInput = Omit<IRespondToAuthChallenge.Input, 'username'>;
 type ExecuteOutput = IRespondToAuthChallenge.Output;
 
 describe('login', () => {
-  let respondToAuthChallengePromiseSpy: jest.Mock;
-  let cognitoInterfaceMock: MockProxy<CognitoIdentityServiceProvider>;
+  let cognitoInterfaceMock: MockProxy<CognitoIdentityProvider>;
   let sut: RespondToAuthChallenge;
 
   const clientId = 'any_client_id';
@@ -34,7 +31,8 @@ describe('login', () => {
   const idToken = 'any_id_token';
 
   beforeAll(() => {
-    respondToAuthChallengePromiseSpy = jest.fn().mockResolvedValue({
+    cognitoInterfaceMock = mock();
+    cognitoInterfaceMock.respondToAuthChallenge.mockImplementation(jest.fn().mockResolvedValue({
       AuthenticationResult: {
         AccessToken: accessToken,
         RefreshToken: refreshToken,
@@ -42,11 +40,7 @@ describe('login', () => {
         ExpiresIn: 3600,
         TokenType: tokenType,
       },
-    });
-    cognitoInterfaceMock = mock();
-    cognitoInterfaceMock.respondToAuthChallenge.mockImplementation(jest.fn().mockImplementation(() => ({
-      promise: respondToAuthChallengePromiseSpy,
-    })));
+    }));
   });
 
   beforeEach(() => {
@@ -74,13 +68,6 @@ describe('login', () => {
 
       expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledWith(respondToAuthObject);
       expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call "promise" with correct params', async () => {
-      await sut.execute<ExecuteInput>({ name: challengeNameInput, responses: { mfaCode, newPassword: undefined }, session }, username);
-
-      expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledWith();
-      expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return authentication data', async () => {
@@ -114,13 +101,6 @@ describe('login', () => {
 
       expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledWith(respondToAuthObjectForNewPassword);
       expect(cognitoInterfaceMock.respondToAuthChallenge).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call "promise" with correct params', async () => {
-      await sut.execute<ExecuteInput>({ name: challengeNameInput, responses: { mfaCode: undefined, newPassword }, session }, username);
-
-      expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledWith();
-      expect(respondToAuthChallengePromiseSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should return authentication data', async () => {

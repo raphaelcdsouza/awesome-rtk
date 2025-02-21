@@ -1,12 +1,10 @@
 /* eslint-disable max-classes-per-file */
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provider';
 
 import { AwsCognitoTemplate } from '../../../../src/Infra/Gateways/Templates/AWS';
 import { IdentityProviderError } from '../../../../src/Errors';
 import { awsCognitoSecretHash } from '../../../../src/Utils';
 import { awsErrorMapper } from '../../../../src/Utils/Gateways/Error';
-
-jest.mock('aws-sdk');
 
 jest.mock('../../../../src/Errors', () => ({
   IdentityProviderError: jest.fn(),
@@ -18,7 +16,7 @@ jest.mock('../../../../src/Utils/Gateways/Error/mapper', () => ({
   awsErrorMapper: jest.fn().mockReturnValue('any_error_mapped'),
 }));
 
-const cognitoInterfaceMock: jest.Mocked<CognitoIdentityServiceProvider> = new CognitoIdentityServiceProvider() as any;
+const cognitoInterfaceMock: jest.Mocked<CognitoIdentityProvider> = new CognitoIdentityProvider() as any;
 
 const clientIdMock = 'any_client_id';
 const clientSecretMock = 'any_client_secret';

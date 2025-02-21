@@ -1,11 +1,9 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provider';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { ResendSignUpConfirmationCode } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvider/actions';
 import { AwsCognitoTemplate } from '../../../../../src/Infra/Gateways/Templates/AWS';
 import { IResendSignUpConfirmationCode } from '../../../../../src/Infra/Interfaces/Gateways';
-
-jest.mock('aws-sdk');
 
 jest.mock('../../../../../src/Utils/hash', () => ({
   awsCognitoSecretHash: jest.fn().mockReturnValue('any_secret_hash'),
@@ -15,8 +13,7 @@ type ExecuteInput = undefined;
 type ExecuteOutput = IResendSignUpConfirmationCode.Output;
 
 describe('resendSignUpConfirmationCode', () => {
-  let resendConfirmationCodePromiseSpy: jest.Mock;
-  let cognitoInterfaceMock: MockProxy<CognitoIdentityServiceProvider>;
+  let cognitoInterfaceMock: MockProxy<CognitoIdentityProvider>;
   let sut: ResendSignUpConfirmationCode;
 
   const clientId = 'any_client_id';
@@ -27,17 +24,14 @@ describe('resendSignUpConfirmationCode', () => {
   const username = 'any_user';
 
   beforeAll(() => {
-    resendConfirmationCodePromiseSpy = jest.fn().mockResolvedValue({
+    cognitoInterfaceMock = mock();
+    cognitoInterfaceMock.resendConfirmationCode.mockImplementation(jest.fn().mockResolvedValue({
       CodeDeliveryDetails: {
         Destination: destination,
         DeliveryMedium: deliveryMedium,
         AttributeName: 'email',
       },
-    });
-    cognitoInterfaceMock = mock();
-    cognitoInterfaceMock.resendConfirmationCode.mockImplementation(jest.fn().mockImplementation(() => ({
-      promise: resendConfirmationCodePromiseSpy,
-    })));
+    }));
   });
 
   beforeEach(() => {
@@ -58,13 +52,6 @@ describe('resendSignUpConfirmationCode', () => {
 
     expect(cognitoInterfaceMock.resendConfirmationCode).toHaveBeenCalledWith(resendConfirmationCodeObject);
     expect(cognitoInterfaceMock.resendConfirmationCode).toHaveBeenCalledTimes(1);
-  });
-
-  it('should call "promise" with correct params', async () => {
-    await sut.execute<ExecuteInput>(undefined, username);
-
-    expect(resendConfirmationCodePromiseSpy).toHaveBeenCalledWith();
-    expect(resendConfirmationCodePromiseSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should return destination and delivery medium', async () => {

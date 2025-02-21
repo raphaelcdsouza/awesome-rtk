@@ -1,4 +1,4 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityProvider, CognitoIdentityProviderClientConfig } from '@aws-sdk/client-cognito-identity-provider';
 
 import { AwsCognitoTemplate } from '../Templates/AWS';
 import * as Interfaces from '../../Interfaces/Gateways';
@@ -10,12 +10,14 @@ type AwsCognitoIdentityProviderConstructorParams = {
   secretAccessKey?: string;
   clientId: string;
   clientSecret?: string;
+  userPoolId?: string;
 }
 
 type AwsCognitoIdentityProviderActionConstructorParams = {
   clientId: string;
-  cognitoInstance: CognitoIdentityServiceProvider;
+  cognitoInstance: CognitoIdentityProvider;
   clientSecret?: string;
+  userPoolId?: string;
 }
 
 export class AwsCognitoIdentityProvider
@@ -33,17 +35,21 @@ implements
   Interfaces.IConfirmForgotPassword,
   Interfaces.IToggleMFA,
   Interfaces.IDeleteUser,
-  Interfaces.IGetUserAttributes {
-  private readonly cognitoInstance: CognitoIdentityServiceProvider;
+  Interfaces.IGetUserAttributes,
+  Interfaces.IAdminCreateUser,
+  Interfaces.IAdminDeleteUser {
+  private readonly cognitoInstance: CognitoIdentityProvider;
 
   private readonly clientId: string;
 
   private readonly clientSecret?: string;
 
+  private readonly userPoolId?: string;
+
   constructor({
-    region, accessKeyId, secretAccessKey, clientId, clientSecret,
+    region, accessKeyId, secretAccessKey, clientId, clientSecret, userPoolId,
   }: AwsCognitoIdentityProviderConstructorParams) {
-    let credentials: CognitoIdentityServiceProvider.ClientConfiguration['credentials'];
+    let credentials: CognitoIdentityProviderClientConfig['credentials'];
 
     if (accessKeyId !== undefined && secretAccessKey !== undefined) {
       credentials = {
@@ -52,12 +58,13 @@ implements
       };
     }
 
-    this.cognitoInstance = new CognitoIdentityServiceProvider({
+    this.cognitoInstance = new CognitoIdentityProvider({
       region,
       credentials,
     });
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+    this.userPoolId = userPoolId;
   }
 
   async signUp({ username, password, attributes }: Interfaces.ISignUp.Input): Promise<Interfaces.ISignUp.Output> {
@@ -142,7 +149,17 @@ implements
     return action.execute<Omit<Interfaces.IRefreshToken.Input, 'sub'>, Interfaces.IRefreshToken.Output>({ refreshToken }, sub);
   }
 
+  async adminCreateUser({ username, password, attributes, desiredDeliveryMediums }: Interfaces.IAdminCreateUser.Input): Promise<Interfaces.IAdminCreateUser.Output> {
+    const action = this.buildActionInstance(Actions.AdminCreateUser);
+    return action.execute<Interfaces.IAdminCreateUser.Input, Interfaces.IAdminCreateUser.Output>({ password, attributes, desiredDeliveryMediums, username });
+  }
+
+  async adminDeleteUser({ username }: Interfaces.IAdminDeleteUser.Input): Promise<void> {
+    const action = this.buildActionInstance(Actions.AdminDeleteUser);
+    await action.execute<Interfaces.IAdminDeleteUser.Input, undefined>({ username });
+  }
+
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {
-    return new Action({ clientId: this.clientId, cognitoInstance: this.cognitoInstance, clientSecret: this.clientSecret });
+    return new Action({ clientId: this.clientId, cognitoInstance: this.cognitoInstance, clientSecret: this.clientSecret, userPoolId: this.userPoolId });
   }
 }

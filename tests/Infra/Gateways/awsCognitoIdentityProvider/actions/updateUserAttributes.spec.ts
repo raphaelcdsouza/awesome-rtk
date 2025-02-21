@@ -1,18 +1,15 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provider';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 import { UpdateUserAttributes } from '../../../../../src/Infra/Gateways/awsCognitoIdentityProvider/actions';
 import { AwsCognitoTemplate } from '../../../../../src/Infra/Gateways/Templates/AWS';
 import { IUpdateUserAttributes } from '../../../../../src';
 
-jest.mock('aws-sdk');
-
 type ExecuteInput = IUpdateUserAttributes.Input;
 type ExecuteOutput = IUpdateUserAttributes.Output;
 
 describe('associateSoftwareToken', () => {
-  let updateUserAttributesPromiseSpy: jest.Mock;
-  let cognitoInterfaceMock: MockProxy<CognitoIdentityServiceProvider>;
+  let cognitoInterfaceMock: MockProxy<CognitoIdentityProvider>;
   let sut: UpdateUserAttributes;
 
   const clientId = 'any_client_id';
@@ -24,11 +21,8 @@ describe('associateSoftwareToken', () => {
   ];
 
   beforeAll(() => {
-    updateUserAttributesPromiseSpy = jest.fn().mockResolvedValue({});
     cognitoInterfaceMock = mock();
-    cognitoInterfaceMock.updateUserAttributes.mockImplementation(jest.fn().mockImplementation(() => ({
-      promise: updateUserAttributesPromiseSpy,
-    })));
+    cognitoInterfaceMock.updateUserAttributes.mockImplementation(jest.fn().mockResolvedValue({}));
   });
 
   beforeEach(() => {
@@ -51,13 +45,6 @@ describe('associateSoftwareToken', () => {
     expect(cognitoInterfaceMock.updateUserAttributes).toHaveBeenCalledTimes(1);
   });
 
-  it('should call "promise" with correct params', async () => {
-    await sut.execute<ExecuteInput>({ accessToken, attributes });
-
-    expect(updateUserAttributesPromiseSpy).toHaveBeenCalledWith();
-    expect(updateUserAttributesPromiseSpy).toHaveBeenCalledTimes(1);
-  });
-
   describe('updating user attributes that doesn\'t need verification', () => {
     it('should return undefined', async () => {
       const result = await sut.execute<ExecuteInput, ExecuteOutput>({ accessToken, attributes });
@@ -68,7 +55,7 @@ describe('associateSoftwareToken', () => {
 
   describe('updating user attributes that needs verification', () => {
     it('should return destination, delivery method and the name of the modified attribute', async () => {
-      updateUserAttributesPromiseSpy.mockResolvedValueOnce({
+      cognitoInterfaceMock.updateUserAttributes.mockImplementationOnce(jest.fn().mockResolvedValue({
         CodeDeliveryDetailsList: [
           {
             AttributeName: 'any_attribute',
@@ -76,7 +63,7 @@ describe('associateSoftwareToken', () => {
             Destination: 'any_destination',
           },
         ],
-      });
+      }));
 
       const result = await sut.execute<ExecuteInput, ExecuteOutput>({ accessToken, attributes });
 
