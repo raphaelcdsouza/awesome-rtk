@@ -43,15 +43,17 @@ implements
   }
 
   async retrieveFile({ key, bucketName, type = 'buffer' }: Interfaces.IRetrieveFile.Input): Promise<Interfaces.IRetrieveFile.Input['type'] extends 'buffer' ? Buffer : ReadableStream> {
-    const action = this.buildActionInstance(Actions.RetrieveFile)
+    const action = this.buildActionInstance(Actions.RetrieveFile);
     return action.execute<Interfaces.IRetrieveFile.Input, Interfaces.IRetrieveFile.Input['type'] extends 'buffer' ? Buffer : ReadableStream>({ key, bucketName, type });
   }
 
   async uploadFile({
     bucketName, file, key, mimeType,
   }: Interfaces.IUploadFile.Input): Promise<string> {
-    const action = this.buildActionInstance(Actions.UploadFile)
-    return action.execute<Interfaces.IUploadFile.Input, string>({ bucketName, file, key, mimeType });
+    const action = this.buildActionInstance(Actions.UploadFile);
+    return action.execute<Interfaces.IUploadFile.Input, string>({
+      bucketName, file, key, mimeType,
+    });
   }
 
   private buildActionInstance<T extends AwsS3Template>(Action: new (params: AwsS3ActionConstructorParams) => T): T {

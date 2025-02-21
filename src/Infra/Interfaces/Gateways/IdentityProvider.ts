@@ -247,7 +247,7 @@ export interface IAdminCreateUser {
   adminCreateUser: (params: IAdminCreateUser.Input) => Promise<IAdminCreateUser.Output>
 }
 
-type DesiredDeliveryMediumsType = "SMS"|"EMAIL"|string
+type DesiredDeliveryMediumsType = 'SMS'|'EMAIL'|string
 
 export namespace IAdminCreateUser {
   export type Input = {

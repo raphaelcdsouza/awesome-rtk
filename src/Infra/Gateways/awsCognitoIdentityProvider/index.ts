@@ -149,9 +149,13 @@ implements
     return action.execute<Omit<Interfaces.IRefreshToken.Input, 'sub'>, Interfaces.IRefreshToken.Output>({ refreshToken }, sub);
   }
 
-  async adminCreateUser({ username, password, attributes, desiredDeliveryMediums }: Interfaces.IAdminCreateUser.Input): Promise<Interfaces.IAdminCreateUser.Output> {
+  async adminCreateUser({
+    username, password, attributes, desiredDeliveryMediums,
+  }: Interfaces.IAdminCreateUser.Input): Promise<Interfaces.IAdminCreateUser.Output> {
     const action = this.buildActionInstance(Actions.AdminCreateUser);
-    return action.execute<Interfaces.IAdminCreateUser.Input, Interfaces.IAdminCreateUser.Output>({ password, attributes, desiredDeliveryMediums, username });
+    return action.execute<Interfaces.IAdminCreateUser.Input, Interfaces.IAdminCreateUser.Output>({
+      password, attributes, desiredDeliveryMediums, username,
+    });
   }
 
   async adminDeleteUser({ username }: Interfaces.IAdminDeleteUser.Input): Promise<void> {
@@ -160,6 +164,8 @@ implements
   }
 
   private buildActionInstance<T extends AwsCognitoTemplate>(Action: new (params: AwsCognitoIdentityProviderActionConstructorParams) => T): T {
-    return new Action({ clientId: this.clientId, cognitoInstance: this.cognitoInstance, clientSecret: this.clientSecret, userPoolId: this.userPoolId });
+    return new Action({
+      clientId: this.clientId, cognitoInstance: this.cognitoInstance, clientSecret: this.clientSecret, userPoolId: this.userPoolId,
+    });
   }
 }

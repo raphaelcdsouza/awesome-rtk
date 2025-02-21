@@ -19,7 +19,9 @@ export abstract class AwsCognitoTemplate extends AwsServiceTemplate<CognitoIdent
 
   protected userPoolId?: string;
 
-  constructor({ cognitoInstance, clientId, clientSecret, userPoolId }: AwsCognitoIdentityProviderTemplateConstructorParams<CognitoIdentityProvider>) {
+  constructor({
+    cognitoInstance, clientId, clientSecret, userPoolId,
+  }: AwsCognitoIdentityProviderTemplateConstructorParams<CognitoIdentityProvider>) {
     super(cognitoInstance);
     this.clientId = clientId;
     this.clientSecret = clientSecret;
