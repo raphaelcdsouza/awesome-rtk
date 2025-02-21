@@ -4,4 +4,5 @@ export type AwsCognitoTemplateConstructorParams = {
   cognitoInstance: CognitoIdentityProvider;
   clientId: string;
   clientSecret?: string;
+  userPoolId?: string;
 }
