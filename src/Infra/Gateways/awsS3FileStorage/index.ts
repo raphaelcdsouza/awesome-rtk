@@ -1,9 +1,9 @@
 // import { S3 } from 'aws-sdk';
-import { S3, S3ClientConfig, PutObjectCommandInput } from '@aws-sdk/client-s3';
-import { FileStorageError } from '../../../Errors';
-import { awsErrorMapper } from '../../../Utils/Gateways/Error';
+import { S3, S3ClientConfig } from '@aws-sdk/client-s3';
 
-import { IRetrieveFile, IUploadFile } from '../../Interfaces/Gateways';
+import { AwsS3Template } from '../Templates/AWS';
+import * as Interfaces from '../../Interfaces/Gateways';
+import * as Actions from './actions';
 
 type AwsS3FileStorageConstructorParams = {
   region?: string;
@@ -11,7 +11,15 @@ type AwsS3FileStorageConstructorParams = {
   secretAccessKey?: string;
 }
 
-export class AwsS3FileStorage implements IRetrieveFile, IUploadFile {
+type AwsS3ActionConstructorParams = {
+  s3Instance: S3;
+  region?: string;
+}
+
+export class AwsS3FileStorage
+implements
+  Interfaces.IRetrieveFile,
+  Interfaces.IUploadFile {
   private readonly region?: string;
 
   private readonly s3Instance: S3;
@@ -34,59 +42,19 @@ export class AwsS3FileStorage implements IRetrieveFile, IUploadFile {
     });
   }
 
-  async retrieveFileFromStream({ key, bucketName }: IRetrieveFile.Input): Promise<ReadableStream | undefined> {
-    try {
-      const stream = (await this.retrieveFromAws(key, bucketName)).Body;
-      return stream === undefined ? undefined : stream.transformToWebStream();
-    } catch (err: any) {
-      throw this.throwError(err);
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async retrieveFile({ key, bucketName, type = 'buffer' }: IRetrieveFile.Input): Promise<IRetrieveFile.Input['type'] extends 'buffer' ? Buffer : ReadableStream> {
-    try {
-      const byteArray = (await this.retrieveFromAws(key, bucketName)).Body;
-      return byteArray === undefined ? undefined : Buffer.from(await byteArray.transformToByteArray()) as any;
-    } catch (err: any) {
-      throw this.throwError(err);
-    }
+  async retrieveFile({ key, bucketName, type = 'buffer' }: Interfaces.IRetrieveFile.Input): Promise<Interfaces.IRetrieveFile.Input['type'] extends 'buffer' ? Buffer : ReadableStream> {
+    const action = this.buildActionInstance(Actions.RetrieveFile)
+    return action.execute<Interfaces.IRetrieveFile.Input, Interfaces.IRetrieveFile.Input['type'] extends 'buffer' ? Buffer : ReadableStream>({ key, bucketName, type });
   }
 
   async uploadFile({
     bucketName, file, key, mimeType,
-  }: IUploadFile.Input): Promise<string> {
-    try {
-      const S3Params: PutObjectCommandInput = {
-        Bucket: bucketName,
-        Key: key,
-        Body: file,
-      };
-
-      if (mimeType !== undefined) {
-        S3Params.ContentType = mimeType;
-      }
-
-      await this.s3Instance.putObject(S3Params);
-
-      return `https://${bucketName}.s3.${this.getRegion()}.amazonaws.com/${key}`;
-    } catch (err: any) {
-      throw this.throwError(err);
-    }
+  }: Interfaces.IUploadFile.Input): Promise<string> {
+    const action = this.buildActionInstance(Actions.UploadFile)
+    return action.execute<Interfaces.IUploadFile.Input, string>({ bucketName, file, key, mimeType });
   }
 
-  private retrieveFromAws(key: string, bucketName: string) {
-    return this.s3Instance.getObject({
-      Bucket: bucketName,
-      Key: key,
-    });
-  }
-
-  private getRegion() {
-    return this.region ?? 'us-west-2';
-  }
-
-  private throwError(err: any) {
-    return new FileStorageError(err.message, awsErrorMapper(err.code, 's3'), 'aws', err.code);
+  private buildActionInstance<T extends AwsS3Template>(Action: new (params: AwsS3ActionConstructorParams) => T): T {
+    return new Action({ s3Instance: this.s3Instance, region: this.region });
   }
 }

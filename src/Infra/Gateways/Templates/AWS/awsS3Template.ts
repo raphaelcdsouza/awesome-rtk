@@ -4,12 +4,12 @@ import { AwsServiceTemplate } from './awsServiceTemplate';
 import { FileStorageError } from '../../../../Errors';
 import { awsErrorMapper } from '../../../../Utils/Gateways/Error';
 
-type AwsCognitoIdentityProviderConstructorParams<T = any> = {
+type AwsS3TemplateConstructorParams<T = any> = {
   s3Instance: T;
 }
 
 export abstract class AwsS3Template extends AwsServiceTemplate<S3> {
-  constructor({ s3Instance }: AwsCognitoIdentityProviderConstructorParams<S3>) {
+  constructor({ s3Instance }: AwsS3TemplateConstructorParams<S3>) {
     super(s3Instance);
   }
 

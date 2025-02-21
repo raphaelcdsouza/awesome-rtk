@@ -7,7 +7,7 @@ import { AwsS3TemplateConstructorParams } from './types';
 type ExecuteInput = IUploadFile.Input;
 
 export class UploadFile extends AwsS3Template {
-  region?: string;
+  protected region?: string;
 
   constructor({ s3Instance, region }: AwsS3TemplateConstructorParams) {
     super({ s3Instance });
