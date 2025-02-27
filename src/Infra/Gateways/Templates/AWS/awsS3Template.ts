@@ -16,6 +16,6 @@ export abstract class AwsS3Template extends AwsServiceTemplate<S3> {
   protected abstract performAction(params: any): Promise<any>
 
   protected throwError(err: any): FileStorageError {
-    return new FileStorageError(err.message, awsErrorMapper(err.code, 's3'), 'aws', err.code);
+    return new FileStorageError(err.message, awsErrorMapper(err.Code, 's3'), 'aws', err.Code);
   }
 }
