@@ -3,20 +3,24 @@ import { AwsS3Template } from '../../Templates/AWS';
 import { AwsS3TemplateConstructorParams } from './types';
 
 type ExecuteInput = IRetrieveFile.Input;
+type ExecuteOutput = IRetrieveFile.Output;
 
 export class RetrieveFile extends AwsS3Template {
   constructor({ s3Instance }: AwsS3TemplateConstructorParams) {
     super({ s3Instance });
   }
 
-  protected async performAction({ key, bucketName, type }: ExecuteInput): Promise<ExecuteInput['type'] extends 'buffer' ? Buffer | undefined : ReadableStream | undefined> {
-    const data = (await this.retrieveFromAws(key, bucketName)).Body;
+  protected async performAction({ key, bucketName }: ExecuteInput): Promise<ExecuteOutput | undefined> {
+    const { Body, ContentType } = await this.retrieveFromAws(key, bucketName);
 
-    if (type === 'buffer') {
-      return data === undefined ? undefined : Buffer.from(await data.transformToByteArray()) as any;
+    if (Body === undefined || ContentType === undefined) {
+      return undefined;
     }
 
-    return data === undefined ? undefined : data.transformToWebStream();
+    return {
+      data: Buffer.from(await Body.transformToByteArray()),
+      contentType: ContentType,
+    }
   }
 
   private retrieveFromAws(key: string, bucketName: string) {
