@@ -42,9 +42,9 @@ implements
     });
   }
 
-  async retrieveFile({ key, bucketName, type = 'buffer' }: Interfaces.IRetrieveFile.Input): Promise<Interfaces.IRetrieveFile.Input['type'] extends 'buffer' ? Buffer : ReadableStream> {
+  async retrieveFile({ key, bucketName }: Interfaces.IRetrieveFile.Input): Promise<Interfaces.IRetrieveFile.Output | undefined> {
     const action = this.buildActionInstance(Actions.RetrieveFile);
-    return action.execute<Interfaces.IRetrieveFile.Input, Interfaces.IRetrieveFile.Input['type'] extends 'buffer' ? Buffer : ReadableStream>({ key, bucketName, type });
+    return action.execute<Interfaces.IRetrieveFile.Input, Interfaces.IRetrieveFile.Output>({ key, bucketName });
   }
 
   async uploadFile({
