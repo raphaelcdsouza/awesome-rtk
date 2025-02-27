@@ -20,7 +20,7 @@ export class RetrieveFile extends AwsS3Template {
     return {
       data: Buffer.from(await Body.transformToByteArray()),
       contentType: ContentType,
-    }
+    };
   }
 
   private retrieveFromAws(key: string, bucketName: string) {
