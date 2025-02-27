@@ -45,7 +45,7 @@ export abstract class AwsCognitoTemplate extends AwsServiceTemplate<CognitoIdent
   }
 
   protected throwError(err: any): InfraError {
-    return new IdentityProviderError(err.message, awsErrorMapper(err.code, 'cognito'), 'aws', err.code);
+    return new IdentityProviderError(err.message, awsErrorMapper(err.Code, 'cognito'), 'aws', err.Code);
   }
 
   protected createSecretHash(username: string, clientSecret: string) {
